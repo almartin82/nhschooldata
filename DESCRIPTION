@@ -1,0 +1,39 @@
+Package: nhschooldata
+Title: Fetch and Process New Hampshire School Enrollment Data
+Version: 0.1.0
+Authors@R:
+    person("Al", "Martin", , "almartin@example.com", role = c("aut", "cre"))
+Description: Downloads and processes school enrollment data from the New Hampshire
+    Department of Education (NH DOE). Provides functions for fetching enrollment
+    data from the iPlatform reporting system and NCES Common Core of Data,
+    transforming it into tidy format for analysis. Supports historical data
+    from 2006 to present.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends:
+    R (>= 4.0)
+Imports:
+    dplyr,
+    readxl,
+    readr,
+    purrr,
+    stringr,
+    tidyr,
+    rlang,
+    httr,
+    rappdirs,
+    xml2,
+    rvest,
+    jsonlite
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    ggplot2,
+    scales
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+URL: https://almartin82.github.io/nhschooldata/, https://github.com/almartin82/nhschooldata
+BugReports: https://github.com/almartin82/nhschooldata/issues

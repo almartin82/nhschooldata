@@ -1,0 +1,50 @@
+url: https://almartin82.github.io/nhschooldata/
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+navbar:
+  structure:
+    left:  [intro, reference, articles]
+    right: [search, github]
+  components:
+    github:
+      icon: fab fa-github
+      href: https://github.com/almartin82/nhschooldata
+
+reference:
+  - title: "Fetching Data"
+    desc: "Functions for downloading enrollment data"
+    contents:
+      - fetch_enr
+      - fetch_enr_multi
+      - get_available_years
+
+  - title: "Data Transformation"
+    desc: "Functions for transforming enrollment data"
+    contents:
+      - tidy_enr
+      - id_enr_aggs
+      - enr_grade_aggs
+
+  - title: "Caching"
+    desc: "Functions for managing cached data"
+    contents:
+      - cache_status
+      - clear_cache
+
+  - title: "Package"
+    contents:
+      - nhschooldata-package
+
+home:
+  links:
+    - text: NH DOE Data Reports
+      href: https://www.education.nh.gov/who-we-are/division-of-educator-and-analytic-resources/bureau-of-education-statistics/data-reports
+    - text: NCES Common Core of Data
+      href: https://nces.ed.gov/ccd/
+
+authors:
+  Al Martin:
+    href: https://github.com/almartin82

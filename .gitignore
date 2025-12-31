@@ -1,0 +1,29 @@
+# R build artifacts
+*.Rproj.user
+*.Rhistory
+*.RData
+*.Ruserdata
+
+# Package build
+*.tar.gz
+*.Rcheck/
+
+# IDE
+.Rproj.user/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation build
+docs/
+inst/doc/
+
+# Cache
+.cache/
+
+# Local development
+.env
+.Renviron.local
