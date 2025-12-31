@@ -41,29 +41,52 @@ safe_numeric <- function(x) {
 
 #' Get available years for enrollment data
 #'
-#' Returns the range of years for which enrollment data is available.
-#' NH DOE iPlatform has data from approximately 2006 to present.
-#' NCES CCD has data from 1986 to present.
+#' Returns the range of years for which enrollment data is available
+#' from the New Hampshire Department of Education.
 #'
-#' @return Named list with min_year and max_year
+#' NH DOE iPlatform provides enrollment data for approximately the
+#' current year plus 10 prior years. Data availability may vary.
+#'
+#' @return Named list with min_year, max_year, source, and note
 #' @export
 #' @examples
 #' get_available_years()
 get_available_years <- function() {
   # NH DOE iPlatform data availability
-  # Historical data available from approximately 2006 onward
-  # Current year data typically available after October 1
-  current_year <- as.integer(format(Sys.Date(), "%Y"))
+  # The iPlatform provides enrollment reports dating back approximately 10 years
+  # Data is collected on October 1 of each school year
+  #
+  # Note: Exact historical availability varies by report type
 
-  # If we're past October, current school year data may be available
+  current_year <- as.integer(format(Sys.Date(), "%Y"))
   current_month <- as.integer(format(Sys.Date(), "%m"))
-  max_year <- if (current_month >= 10) current_year + 1 else current_year
+
+  # NH DOE releases fall enrollment data after October 1
+  # Data for current school year is typically available by late fall
+  if (current_month >= 11) {
+    # After November: current school year data likely available
+    max_year <- current_year + 1
+  } else if (current_month >= 9) {
+    # September-October: current year data being collected
+    max_year <- current_year
+  } else {
+    # January-August: previous school year is most recent
+    max_year <- current_year
+  }
+
+  # iPlatform typically provides about 10 years of historical data
+  min_year <- max_year - 10
 
   list(
-    min_year = 2006L,
+    min_year = min_year,
     max_year = max_year,
-    source = "NH DOE iPlatform",
-    note = "Data availability may vary by year. Earliest consistent data is from 2006."
+    source = "New Hampshire Department of Education iPlatform",
+    note = paste0(
+      "Data availability: ", min_year, "-", max_year, ". ",
+      "NH DOE iPlatform provides approximately 10 years of historical data. ",
+      "Enrollment is measured on October 1 of each school year. ",
+      "Access data at: https://my.doe.nh.gov/iPlatform"
+    )
   )
 }
 
@@ -90,24 +113,17 @@ validate_year <- function(end_year) {
 }
 
 
-#' Determine format era for a given year
+#' Format school year for display
 #'
-#' NH DOE data has gone through several format changes:
-#' - Era 1 (2006-2013): Original iPlatform format
-#' - Era 2 (2014-2019): Updated column names
-#' - Era 3 (2020-present): Current format with additional fields
+#' Converts an end year integer to a display format (e.g., 2024 -> "2023-24").
 #'
-#' @param end_year School year end
-#' @return Character string indicating the format era
+#' @param end_year Integer end year
+#' @return Character string in "YYYY-YY" format
 #' @keywords internal
-get_format_era <- function(end_year) {
-  if (end_year <= 2013) {
-    "era1"
-  } else if (end_year <= 2019) {
-    "era2"
-  } else {
-    "era3"
-  }
+format_school_year <- function(end_year) {
+  start_year <- end_year - 1
+  end_short <- end_year %% 100
+  paste0(start_year, "-", sprintf("%02d", end_short))
 }
 
 

@@ -3,30 +3,35 @@
 # ==============================================================================
 #
 # This file contains functions for downloading enrollment data from the
-# New Hampshire Department of Education (NH DOE).
+# New Hampshire Department of Education (NH DOE) iPlatform.
+#
+# Data source: https://my.doe.nh.gov/iPlatform
 #
 # ==============================================================================
 
 #' Fetch New Hampshire enrollment data
 #'
-#' Downloads and processes enrollment data from the New Hampshire Department
-#' of Education. Data is sourced from NH DOE iPlatform and NCES Common Core
-#' of Data (CCD).
+#' Downloads and processes enrollment data for New Hampshire public schools.
+#' Data is sourced directly from the New Hampshire Department of Education
+#' iPlatform reporting system.
 #'
 #' @param end_year A school year. Year is the end of the academic year - eg 2023-24
-#'   school year is year '2024'. Valid values are 2006-present.
+#'   school year is year '2024'. Run get_available_years() to see available years.
 #' @param tidy If TRUE (default), returns data in long (tidy) format with subgroup
 #'   column. If FALSE, returns wide format.
 #' @param use_cache If TRUE (default), uses locally cached data when available.
-#'   Set to FALSE to force re-download from NH DOE.
+#'   Set to FALSE to force re-download.
 #' @return Data frame with enrollment data. Wide format includes columns for
-#'   district_id, campus_id, names, and enrollment counts by demographic/grade.
+#'   district_id, campus_id, names, and enrollment counts by grade.
 #'   Tidy format pivots these counts into subgroup and grade_level columns.
 #' @export
 #' @examples
 #' \dontrun{
 #' # Get 2024 enrollment data (2023-24 school year)
 #' enr_2024 <- fetch_enr(2024)
+#'
+#' # Check available years
+#' get_available_years()
 #'
 #' # Get wide format
 #' enr_wide <- fetch_enr(2024, tidy = FALSE)
@@ -84,7 +89,7 @@ fetch_enr <- function(end_year, tidy = TRUE, use_cache = TRUE) {
 #' @export
 #' @examples
 #' \dontrun{
-#' # Get 3 years of data
+#' # Get 3 years of recent data
 #' enr_multi <- fetch_enr_multi(2022:2024)
 #'
 #' # Track enrollment trends

@@ -5,6 +5,16 @@
 # This file contains functions for processing raw NH DOE enrollment data into a
 # clean, standardized format.
 #
+# NH DOE iPlatform enrollment data typically includes:
+# - District/School identifiers and names
+# - SAU (School Administrative Unit) numbers
+# - Enrollment by grade level (Pre-K, K, 1-12)
+# - Total enrollment
+#
+# Note: Demographics (race/ethnicity, gender) are typically not included
+# in the standard enrollment reports from NH DOE iPlatform. These would
+# require separate data collection.
+#
 # ==============================================================================
 
 #' Process raw NH DOE enrollment data
@@ -65,8 +75,9 @@ process_school_enr <- function(df, end_year) {
     stringsAsFactors = FALSE
   )
 
-  # School ID - NCES uses NCESSCH, NH uses various formats
-  school_id_col <- find_col(c("NCESSCH", "ncessch", "SCHOOL_ID", "school_id", "SCH_ID", "SCHID"))
+  # School ID - NH DOE uses various formats
+  school_id_col <- find_col(c("SCHOOL_ID", "SCHOOLID", "SCH_ID", "SCHID", "SCHOOL_NUMBER",
+                               "NCESSCH", "ncessch", "school_id"))
   if (!is.null(school_id_col)) {
     result$campus_id <- trimws(as.character(df[[school_id_col]]))
   } else {
@@ -74,7 +85,8 @@ process_school_enr <- function(df, end_year) {
   }
 
   # District ID
-  district_id_col <- find_col(c("LEAID", "leaid", "LEA_ID", "DISTRICT_ID", "district_id"))
+  district_id_col <- find_col(c("DISTRICT_ID", "DISTRICTID", "DIST_ID", "DISTRICT_NUMBER",
+                                 "LEAID", "leaid", "LEA_ID", "district_id"))
   if (!is.null(district_id_col)) {
     result$district_id <- trimws(as.character(df[[district_id_col]]))
   } else {
@@ -82,7 +94,8 @@ process_school_enr <- function(df, end_year) {
   }
 
   # School name
-  school_name_col <- find_col(c("SCH_NAME", "school_name", "SCHNAM", "SCHOOL_NAME", "NAME"))
+  school_name_col <- find_col(c("SCHOOL_NAME", "SCHOOLNAME", "SCH_NAME", "SCHOOL",
+                                 "school_name", "SCHNAM", "NAME"))
   if (!is.null(school_name_col)) {
     result$campus_name <- clean_names(as.character(df[[school_name_col]]))
   } else {
@@ -90,14 +103,23 @@ process_school_enr <- function(df, end_year) {
   }
 
   # District name
-  district_name_col <- find_col(c("LEA_NAME", "lea_name", "LEANM", "DISTRICT_NAME", "district_name"))
+  district_name_col <- find_col(c("DISTRICT_NAME", "DISTRICTNAME", "DIST_NAME", "DISTRICT",
+                                   "LEA_NAME", "lea_name", "LEANM", "district_name"))
   if (!is.null(district_name_col)) {
     result$district_name <- clean_names(as.character(df[[district_name_col]]))
   } else {
     result$district_name <- rep(NA_character_, n_rows)
   }
 
-  # County (not always available in CCD data)
+  # SAU (School Administrative Unit) - NH specific
+  sau_col <- find_col(c("SAU", "SAU_NUMBER", "SAU_ID", "SAUNUMBER"))
+  if (!is.null(sau_col)) {
+    result$sau <- trimws(as.character(df[[sau_col]]))
+  } else {
+    result$sau <- rep(NA_character_, n_rows)
+  }
+
+  # County (not always available in NH DOE data)
   county_col <- find_col(c("COUNTY", "county", "CNTY", "CONAME"))
   if (!is.null(county_col)) {
     result$county <- clean_names(as.character(df[[county_col]]))
@@ -126,7 +148,7 @@ process_school_enr <- function(df, end_year) {
     result$row_total <- rep(NA_integer_, n_rows)
   }
 
-  # Demographics - CCD uses different naming conventions
+  # Demographics - if available in NH DOE data
   demo_map <- list(
     white = c("WH", "white", "WHITE", "RACE_WHITE"),
     black = c("BL", "black", "BLACK", "RACE_BLACK", "RACE_AFRICAN_AMERICAN"),
@@ -161,22 +183,22 @@ process_school_enr <- function(df, end_year) {
     }
   }
 
-  # Grade levels - CCD uses PK, KG, G01-G12
+  # Grade levels - NH DOE uses various formats (PREK, K, G01-G12 or 1-12)
   grade_map <- list(
-    grade_pk = c("PK", "pk", "PREKINDERGARTEN", "PRE_K"),
-    grade_k = c("KG", "kg", "K", "KINDERGARTEN"),
-    grade_01 = c("G01", "g01", "GRADE_1", "GR01"),
-    grade_02 = c("G02", "g02", "GRADE_2", "GR02"),
-    grade_03 = c("G03", "g03", "GRADE_3", "GR03"),
-    grade_04 = c("G04", "g04", "GRADE_4", "GR04"),
-    grade_05 = c("G05", "g05", "GRADE_5", "GR05"),
-    grade_06 = c("G06", "g06", "GRADE_6", "GR06"),
-    grade_07 = c("G07", "g07", "GRADE_7", "GR07"),
-    grade_08 = c("G08", "g08", "GRADE_8", "GR08"),
-    grade_09 = c("G09", "g09", "GRADE_9", "GR09"),
-    grade_10 = c("G10", "g10", "GRADE_10", "GR10"),
-    grade_11 = c("G11", "g11", "GRADE_11", "GR11"),
-    grade_12 = c("G12", "g12", "GRADE_12", "GR12")
+    grade_pk = c("PREK", "PRE-K", "PK", "pk", "PREKINDERGARTEN", "PRE_K", "PRESCHOOL"),
+    grade_k = c("K", "KG", "kg", "KINDERGARTEN", "KINDER"),
+    grade_01 = c("G01", "G1", "01", "1", "g01", "GRADE_1", "GR01", "GRADE1"),
+    grade_02 = c("G02", "G2", "02", "2", "g02", "GRADE_2", "GR02", "GRADE2"),
+    grade_03 = c("G03", "G3", "03", "3", "g03", "GRADE_3", "GR03", "GRADE3"),
+    grade_04 = c("G04", "G4", "04", "4", "g04", "GRADE_4", "GR04", "GRADE4"),
+    grade_05 = c("G05", "G5", "05", "5", "g05", "GRADE_5", "GR05", "GRADE5"),
+    grade_06 = c("G06", "G6", "06", "6", "g06", "GRADE_6", "GR06", "GRADE6"),
+    grade_07 = c("G07", "G7", "07", "7", "g07", "GRADE_7", "GR07", "GRADE7"),
+    grade_08 = c("G08", "G8", "08", "8", "g08", "GRADE_8", "GR08", "GRADE8"),
+    grade_09 = c("G09", "G9", "09", "9", "g09", "GRADE_9", "GR09", "GRADE9"),
+    grade_10 = c("G10", "10", "g10", "GRADE_10", "GR10", "GRADE10"),
+    grade_11 = c("G11", "11", "g11", "GRADE_11", "GR11", "GRADE11"),
+    grade_12 = c("G12", "12", "g12", "GRADE_12", "GR12", "GRADE12")
   )
 
   for (name in names(grade_map)) {
@@ -188,7 +210,7 @@ process_school_enr <- function(df, end_year) {
     }
   }
 
-  # Special populations - may not be in basic CCD data
+  # Special populations - may not be in basic NH DOE data
   special_map <- list(
     econ_disadv = c("FREELUNCH", "FREE_LUNCH", "ECON_DISADV", "FRL"),
     lep = c("LEP", "ELL", "LIMITED_ENGLISH"),

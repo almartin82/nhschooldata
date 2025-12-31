@@ -25,30 +25,37 @@ test_that("get_available_years returns valid range", {
   expect_true(is.list(years))
   expect_true("min_year" %in% names(years))
   expect_true("max_year" %in% names(years))
+  expect_true("source" %in% names(years))
   expect_true(years$min_year <= years$max_year)
-  expect_equal(years$min_year, 2006L)
+  # NH DOE iPlatform provides approximately 10 years of data
+  expect_true(years$max_year - years$min_year >= 5)
+  expect_true(years$max_year - years$min_year <= 15)
+  expect_true(grepl("New Hampshire", years$source))
 })
 
 test_that("validate_year rejects invalid years", {
+  # Years too far in the past (NH DOE only has ~10 years of data)
   expect_error(validate_year(1990), "end_year must be between")
+  # Years in the future
   expect_error(validate_year(2050), "end_year must be between")
+  # Non-numeric inputs
   expect_error(validate_year("2020"), "must be a single numeric value")
   expect_error(validate_year(c(2020, 2021)), "must be a single numeric value")
 })
 
 test_that("validate_year accepts valid years", {
-  expect_true(validate_year(2020))
-  expect_true(validate_year(2015))
-  expect_true(validate_year(2010))
+  years <- get_available_years()
+  # Test a year in the middle of the available range
+  mid_year <- as.integer(mean(c(years$min_year, years$max_year)))
+  expect_true(validate_year(mid_year))
+  expect_true(validate_year(years$min_year))
+  expect_true(validate_year(years$max_year))
 })
 
-test_that("get_format_era returns correct era", {
-  expect_equal(get_format_era(2010), "era1")
-  expect_equal(get_format_era(2013), "era1")
-  expect_equal(get_format_era(2014), "era2")
-  expect_equal(get_format_era(2019), "era2")
-  expect_equal(get_format_era(2020), "era3")
-  expect_equal(get_format_era(2024), "era3")
+test_that("format_school_year formats correctly", {
+  expect_equal(format_school_year(2024), "2023-24")
+  expect_equal(format_school_year(2020), "2019-20")
+  expect_equal(format_school_year(2000), "1999-00")
 })
 
 test_that("clean_names removes extra whitespace", {
@@ -82,6 +89,26 @@ test_that("create_empty_enrollment_df returns correct structure", {
   expect_true("district_id" %in% names(empty_df))
   expect_true("campus_id" %in% names(empty_df))
   expect_true("row_total" %in% names(empty_df))
+})
+
+test_that("import_local_enrollment rejects missing files", {
+  expect_error(
+    import_local_enrollment("/nonexistent/file.xlsx", 2024, "school"),
+    "File not found"
+  )
+})
+
+test_that("import_local_enrollment rejects unsupported file types", {
+  # Create a temp file with unsupported extension
+  temp_file <- tempfile(fileext = ".pdf")
+  file.create(temp_file)
+
+  expect_error(
+    import_local_enrollment(temp_file, 2024, "school"),
+    "Unsupported file type"
+  )
+
+  unlink(temp_file)
 })
 
 # Integration tests (require network access)
