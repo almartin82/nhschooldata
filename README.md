@@ -2,12 +2,13 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/almartin82/nhschooldata/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/almartin82/nhschooldata/actions/workflows/R-CMD-check.yaml)
+[![Python Tests](https://github.com/almartin82/nhschooldata/actions/workflows/python-test.yaml/badge.svg)](https://github.com/almartin82/nhschooldata/actions/workflows/python-test.yaml)
 [![pkgdown](https://github.com/almartin82/nhschooldata/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/almartin82/nhschooldata/actions/workflows/pkgdown.yaml)
 <!-- badges: end -->
 
 **[Documentation](https://almartin82.github.io/nhschooldata/)** | **[Getting Started](https://almartin82.github.io/nhschooldata/articles/quickstart.html)**
 
-Fetch and analyze New Hampshire public school enrollment data from the NH Department of Education.
+Fetch and analyze New Hampshire school enrollment data from the NH Department of Education in R or Python.
 
 ## What can you find with nhschooldata?
 
@@ -296,6 +297,8 @@ remotes::install_github("almartin82/nhschooldata")
 
 ## Quick start
 
+### R
+
 ```r
 library(nhschooldata)
 library(dplyr)
@@ -317,6 +320,36 @@ enr_2024 %>%
 
 # Check available years
 get_available_years()
+```
+
+### Python
+
+```python
+import pynhschooldata as nh
+
+# Fetch one year
+enr_2024 = nh.fetch_enr(2024)
+
+# Fetch multiple years
+enr_recent = nh.fetch_enr_multi([2019, 2020, 2021, 2022, 2023, 2024])
+
+# State totals
+state = enr_2024[
+    (enr_2024['is_state']) &
+    (enr_2024['subgroup'] == 'total_enrollment') &
+    (enr_2024['grade_level'] == 'TOTAL')
+]
+
+# District breakdown
+districts = enr_2024[
+    (enr_2024['is_district']) &
+    (enr_2024['subgroup'] == 'total_enrollment') &
+    (enr_2024['grade_level'] == 'TOTAL')
+].sort_values('n_students', ascending=False)
+
+# Check available years
+years = nh.get_available_years()
+print(f"Data available from {years['min_year']} to {years['max_year']}")
 ```
 
 ## Data availability
