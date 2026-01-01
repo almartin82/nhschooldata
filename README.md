@@ -279,6 +279,14 @@ Seacoast: **-4%**. North Country: **-29%**. Rural depopulation is accelerating.
 
 ---
 
+## Enrollment Visualizations
+
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/statewide-chart-1.png" alt="New Hampshire statewide enrollment trends" width="600">
+
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/top-districts-chart-1.png" alt="Top New Hampshire districts" width="600">
+
+See the [full vignette](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html) for more insights.
+
 ## Installation
 
 ```r
