@@ -26,32 +26,28 @@ library(ggplot2)
 theme_set(theme_minimal(base_size = 14))
 ```
 
-## New Hampshire Lost 42,000 Students Since 2002
+## New Hampshire Enrollment Trends (2016-2024)
 
-The Granite State peaked at 207,000 students and has declined ever since. This 20% drop reflects an aging population and declining birth rates.
+New Hampshire's public school enrollment reflects the state's demographic challenges - an aging population and declining birth rates leading to gradual enrollment decline.
 
 ```{r statewide-data}
-enr <- fetch_enr_multi(c(1990, 1995, 2002, 2005, 2010, 2015, 2020, 2024))
+enr <- fetch_enr_multi(2016:2024)
 
 statewide <- enr %>%
   filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-
   select(end_year, n_students)
 
 statewide
 ```
 
-```{r statewide-chart, fig.cap="New Hampshire statewide enrollment peaked in 2002"}
+```{r statewide-chart, fig.cap="New Hampshire statewide enrollment 2016-2024"}
 ggplot(statewide, aes(x = end_year, y = n_students)) +
   geom_line(color = "#2E86AB", linewidth = 1.2) +
   geom_point(color = "#2E86AB", size = 3) +
-  geom_vline(xintercept = 2002, linetype = "dashed", color = "#E94F37", alpha = 0.7) +
-  annotate("text", x = 2002, y = max(statewide$n_students) * 0.95,
-           label = "Peak: 2002", hjust = -0.1, color = "#E94F37") +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
   labs(
-    title = "New Hampshire Public School Enrollment (1990-2024)",
-    subtitle = "Lost 42,000 students (-20%) since 2002 peak",
+    title = "New Hampshire Public School Enrollment (2016-2024)",
+    subtitle = "Gradual decline reflecting demographic trends",
     x = "Year",
     y = "Students"
   )
@@ -91,10 +87,10 @@ top_districts %>%
 
 ## Demographics: New Hampshire Is Getting More Diverse
 
-White students have declined from 92% to 85% since 2010. Hispanic and multiracial students are the fastest-growing demographic groups.
+Hispanic and multiracial students are among the fastest-growing demographic groups.
 
 ```{r demographics-data}
-enr_demo <- fetch_enr_multi(c(2010, 2015, 2020, 2024))
+enr_demo <- fetch_enr_multi(c(2016, 2018, 2020, 2024))
 
 demographics <- enr_demo %>%
   filter(is_state, grade_level == "TOTAL",
@@ -123,8 +119,8 @@ demographics %>%
                                 "Black" = "#A23B72")) +
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   labs(
-    title = "Demographic Composition of NH Public Schools (2010-2024)",
-    subtitle = "White share declined from 92% to 85%; Hispanic and multiracial growing fastest",
+    title = "Demographic Composition of NH Public Schools (2016-2024)",
+    subtitle = "Hispanic and multiracial populations growing",
     x = "Year",
     y = "Percent of Students",
     color = "Group"
@@ -134,13 +130,13 @@ demographics %>%
 
 ## Regional Divergence: Seacoast Steady, North Country Declining
 
-Coastal communities are holding relatively steady (-4%) while the North Country has lost nearly a third of its students (-29%) since 2015.
+Coastal communities are holding relatively steady while the North Country has experienced steeper declines.
 
 ```{r regional-data}
 seacoast <- c("Portsmouth", "Dover", "Rochester", "Exeter", "Hampton")
 north_country <- c("Berlin", "Colebrook", "Lancaster", "Littleton", "Gorham")
 
-enr_regional <- fetch_enr_multi(c(2015, 2018, 2021, 2024))
+enr_regional <- fetch_enr_multi(c(2016, 2018, 2021, 2024))
 
 regional <- enr_regional %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
@@ -164,7 +160,7 @@ ggplot(regional, aes(x = end_year, y = total, color = region)) +
   scale_y_continuous(labels = scales::comma) +
   labs(
     title = "Regional Enrollment: Seacoast vs. North Country",
-    subtitle = "North Country lost 29% of students since 2015; Seacoast only 4%",
+    subtitle = "North Country experiencing steeper declines than coastal areas",
     x = "Year",
     y = "Students",
     color = "Region"
@@ -174,10 +170,10 @@ ggplot(regional, aes(x = end_year, y = total, color = region)) +
 
 ## Grade-Level Trends: The Pipeline Is Narrowing
 
-Kindergarten enrollment has dropped 15% since 2015, signaling continued decline ahead. High school grades are declining more slowly for now.
+Kindergarten enrollment trends signal potential future decline, as fewer students enter the system each year.
 
 ```{r grade-level-data}
-enr_grades <- fetch_enr_multi(2015:2024)
+enr_grades <- fetch_enr_multi(2016:2024)
 
 grades <- enr_grades %>%
   filter(is_state, subgroup == "total_enrollment",
@@ -205,8 +201,8 @@ grades %>%
   scale_color_brewer(palette = "Set1") +
   scale_y_continuous(labels = scales::comma) +
   labs(
-    title = "New Hampshire Enrollment by Grade Level (2015-2024)",
-    subtitle = "Kindergarten down 15%; high school grades declining more slowly",
+    title = "New Hampshire Enrollment by Grade Level (2016-2024)",
+    subtitle = "Tracking enrollment pipeline across grade levels",
     x = "Year",
     y = "Students",
     color = "Grade"
@@ -254,9 +250,7 @@ ggplot(district_sizes, aes(x = size, y = n, fill = size)) +
 
 New Hampshire's public school enrollment tells a story of demographic transition:
 
-- **Declining enrollment**: Down 42,000 students (20%) since the 2002 peak
-- **Urbanization**: Large cities losing ground to suburban districts
-- **Diversification**: White share declining as Hispanic and multiracial populations grow
-- **Regional divergence**: Coastal areas stable, rural North Country losing students rapidly
-- **Kindergarten warning**: 15% fewer kindergartners than 2015 signals continued decline
-- **Many tiny districts**: 45 districts under 300 students, managed through SAU sharing
+- **Declining enrollment**: Gradual decline reflecting aging population
+- **Regional divergence**: Coastal areas stable, rural North Country experiencing steeper declines
+- **Diversification**: Hispanic and multiracial student populations growing
+- **Many small districts**: Districts sharing administration through SAUs
