@@ -42,8 +42,8 @@ home:
   links:
     - text: NH DOE Data Reports
       href: https://www.education.nh.gov/who-we-are/division-of-educator-and-analytic-resources/bureau-of-education-statistics/data-reports
-    - text: NCES Common Core of Data
-      href: https://nces.ed.gov/ccd/
+    - text: NH DOE iPlatform
+      href: https://my.doe.nh.gov/iPlatform
     - text: "Part of the 50 State Schooldata Family"
       href: https://github.com/almartin82/njschooldata
 

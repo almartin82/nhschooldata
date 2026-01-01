@@ -335,7 +335,7 @@ get_available_years()
 
 ## Data source
 
-NCES Common Core of Data: [nces.ed.gov/ccd](https://nces.ed.gov/ccd/) | NH DOE: [education.nh.gov](https://www.education.nh.gov/)
+NH DOE: [education.nh.gov](https://www.education.nh.gov/) | iPlatform: [my.doe.nh.gov/iPlatform](https://my.doe.nh.gov/iPlatform)
 
 ## Part of the 50 State Schooldata Family
 
