@@ -34,6 +34,11 @@ reference:
       - cache_status
       - clear_cache
 
+  - title: "Manual Import"
+    desc: "Functions for importing manually downloaded data"
+    contents:
+      - import_local_enrollment
+
   - title: "Package"
     contents:
       - nhschooldata-package
