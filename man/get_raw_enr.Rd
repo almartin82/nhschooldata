@@ -18,4 +18,8 @@ Downloads enrollment data from the New Hampshire Department of Education
 iPlatform reporting system. Data includes district and school-level
 enrollment by grade.
 }
+\details{
+Note: NH DOE iPlatform may require browser-based access. If automatic
+download fails, use import_local_enrollment() with manually downloaded files.
+}
 \keyword{internal}

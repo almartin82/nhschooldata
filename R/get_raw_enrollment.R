@@ -28,6 +28,9 @@
 #' iPlatform reporting system. Data includes district and school-level
 #' enrollment by grade.
 #'
+#' Note: NH DOE iPlatform may require browser-based access. If automatic
+#' download fails, use import_local_enrollment() with manually downloaded files.
+#'
 #' @param end_year School year end (2023-24 = 2024). Valid range determined
 #'   by NH DOE data availability.
 #' @return List with school and district data frames

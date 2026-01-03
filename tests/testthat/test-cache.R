@@ -60,6 +60,7 @@ test_that("clear_cache removes files", {
 })
 
 test_that("cache_status runs without error", {
-  # Should run even with empty cache
-  expect_silent(cache_status())
+  # cache_status prints a table or message, which is expected output
+  # we just want to ensure it doesn't error
+  expect_no_error(cache_status())
 })
