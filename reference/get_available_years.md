@@ -23,15 +23,15 @@ year plus 10 prior years. Data availability may vary.
 ``` r
 get_available_years()
 #> $min_year
-#> [1] 2016
+#> [1] 2014
 #> 
 #> $max_year
-#> [1] 2026
+#> [1] 2024
 #> 
 #> $source
 #> [1] "New Hampshire Department of Education iPlatform"
 #> 
 #> $note
-#> [1] "Data availability: 2016-2026. NH DOE iPlatform provides approximately 10 years of historical data. Enrollment is measured on October 1 of each school year. Access data at: https://my.doe.nh.gov/iPlatform"
+#> [1] "Data availability: 2014-2024. NH DOE iPlatform provides approximately 10 years of historical data. Enrollment is measured on October 1 of each school year. Access data at: https://my.doe.nh.gov/iPlatform"
 #> 
 ```
