@@ -51,16 +51,16 @@ get_available_years <- function() {
 
   # NH DOE releases fall enrollment data after October 1
   # Data for current school year is typically available by late fall
-  # Note: Capped at 2024 for confirmed data availability
+  # Note: Capped at 2025 for confirmed data availability
   if (current_month >= 11) {
     # After November: current school year data likely available
-    max_year <- min(current_year + 1, 2024L)
+    max_year <- min(current_year + 1, 2025L)
   } else if (current_month >= 9) {
     # September-October: current year data being collected
-    max_year <- min(current_year, 2024L)
+    max_year <- min(current_year, 2025L)
   } else {
     # January-August: previous school year is most recent
-    max_year <- min(current_year, 2024L)
+    max_year <- min(current_year, 2025L)
   }
 
   # iPlatform typically provides about 10 years of historical data

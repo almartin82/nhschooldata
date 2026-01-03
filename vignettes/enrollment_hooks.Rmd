@@ -14,9 +14,20 @@ knitr::opts_chunk$set(
   fig.width = 8,
   fig.height = 5,
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  eval = FALSE
 )
 ```
+
+## Note: Data Access
+
+The NH DOE iPlatform requires browser-based access. To run this vignette with real data:
+
+1. Visit https://my.doe.nh.gov/iPlatform
+2. Download the enrollment reports
+3. Use `import_local_enrollment()` to load the data
+
+The code examples below show how to analyze the data once loaded.
 
 ```{r load-packages}
 library(nhschooldata)

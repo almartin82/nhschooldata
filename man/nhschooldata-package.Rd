@@ -3,9 +3,9 @@
 \docType{package}
 \name{nhschooldata-package}
 \alias{nhschooldata-package}
-\title{nhschooldata: Fetch and Process New Hampshire School Enrollment Data}
+\title{nhschooldata: New Hampshire School Data}
 \description{
-Downloads and processes school enrollment data for New Hampshire public schools. Data is sourced directly from the New Hampshire Department of Education (NH DOE) iPlatform reporting system. Provides functions for fetching enrollment data and transforming it into tidy format for analysis. Includes district and school-level enrollment by grade. Historical data typically available for approximately 10 years.
+A simple, consistent interface for accessing New Hampshire school data in Python and R.
 
 An R package for downloading and processing school enrollment data for
 New Hampshire public schools. Data is sourced directly from the
