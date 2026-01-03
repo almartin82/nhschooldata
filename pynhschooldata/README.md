@@ -31,10 +31,10 @@ years = nh.get_available_years()
 print(f"Data available from {years['min_year']} to {years['max_year']}")
 
 # Fetch one year
-df = nh.fetch_enr(2025)
+df = nh.fetch_enr(2024)
 
 # Fetch multiple years
-df_multi = nh.fetch_enr_multi([2020, 2021, 2022, 2023, 2024, 2025])
+df_multi = nh.fetch_enr_multi([2020, 2021, 2022, 2023, 2024])
 
 # Convert to tidy format
 tidy = nh.tidy_enr(df)

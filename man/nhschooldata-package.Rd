@@ -49,7 +49,7 @@ New Hampshire's school system includes:
 \item 456 public schools
 \item School Administrative Units (SAUs) that may cover multiple districts
 \item Public charter schools
-\item Approximately 160,000 students enrolled (2025)
+\item Approximately 160,000 students enrolled (2024)
 }
 }
 

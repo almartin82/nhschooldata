@@ -27,7 +27,7 @@ def fetch_enr(end_year: int) -> pd.DataFrame:
     Parameters
     ----------
     end_year : int
-        The ending year of the school year (e.g., 2025 for 2024-25).
+        The ending year of the school year (e.g., 2024 for 2023-24).
 
     Returns
     -------
@@ -38,7 +38,7 @@ def fetch_enr(end_year: int) -> pd.DataFrame:
     Examples
     --------
     >>> import pynhschooldata as nh
-    >>> df = nh.fetch_enr(2025)
+    >>> df = nh.fetch_enr(2024)
     >>> df.head()
     """
     pkg = _get_pkg()
@@ -94,7 +94,7 @@ def tidy_enr(df: pd.DataFrame) -> pd.DataFrame:
     Examples
     --------
     >>> import pynhschooldata as nh
-    >>> df = nh.fetch_enr(2025)
+    >>> df = nh.fetch_enr(2024)
     >>> tidy = nh.tidy_enr(df)
     """
     pkg = _get_pkg()
