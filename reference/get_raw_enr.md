@@ -20,3 +20,9 @@ get_raw_enr(end_year)
 ## Value
 
 List with school and district data frames
+
+## Details
+
+Note: NH DOE iPlatform may require browser-based access. If automatic
+download fails, use import_local_enrollment() with manually downloaded
+files.

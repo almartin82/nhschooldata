@@ -35,6 +35,11 @@
       <small class="dont-index">Source: <a href="https://github.com/almartin82/nhschooldata/blob/main/CLAUDE.md" class="external-link"><code>CLAUDE.md</code></a></small>
     </div>
 
+
+<div class="section level2">
+<h2 id="critical-data-source-rules">CRITICAL DATA SOURCE RULES<a class="anchor" aria-label="anchor" href="#critical-data-source-rules"></a></h2>
+<p><strong>NEVER use Urban Institute API, NCES CCD, or ANY federal data source</strong> — the entire point of these packages is to provide STATE-LEVEL data directly from state DOEs. Federal sources aggregate/transform data differently and lose state-specific details. If a state DOE source is broken, FIX IT or find an alternative STATE source — do not fall back to federal data.</p>
+<hr></div>
 <div id="claude-code-instructions" class="section level1">
 
 <div class="section level2">
@@ -43,10 +48,169 @@
 <li>NEVER reference Claude, Claude Code, or AI assistance in PR descriptions</li>
 <li>NEVER add Co-Authored-By lines mentioning Claude or Anthropic</li>
 <li>Keep commit messages focused on what changed, not how it was written</li>
-</ul></div>
+</ul><hr></div>
+</div>
+<div class="section level1">
+<h1 id="nhschooldata-package-documentation">nhschooldata Package Documentation<a class="anchor" aria-label="anchor" href="#nhschooldata-package-documentation"></a></h1>
+<div class="section level2">
+<h2 id="package-overview">Package Overview<a class="anchor" aria-label="anchor" href="#package-overview"></a></h2>
+<p><code>nhschooldata</code> provides a simple, consistent interface for accessing New Hampshire school enrollment data from the NH Department of Education (NH DOE).</p>
+</div>
+<div class="section level2">
+<h2 id="data-source">Data Source<a class="anchor" aria-label="anchor" href="#data-source"></a></h2>
+<p><strong>Primary Source</strong>: NH DOE iPlatform Public Reports - URL: <a href="https://my.doe.nh.gov/iPlatform" class="external-link uri">https://my.doe.nh.gov/iPlatform</a> - Note: iPlatform requires browser-based access and may require authentication</p>
+<p><strong>Available Years</strong>: 2015-2025 (approximately 10 years of historical data)</p>
+</div>
+<div class="section level2">
+<h2 id="current-status">Current Status<a class="anchor" aria-label="anchor" href="#current-status"></a></h2>
+<p><strong>IMPORTANT</strong>: The NH DOE iPlatform requires browser-based access. The automatic download functionality may fail, requiring users to:</p>
+<ol style="list-style-type: decimal"><li>
+<p>Visit the iPlatform directly:</p>
+<ul><li>District enrollment: <a href="https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9" class="external-link uri">https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9</a>
+</li>
+<li>School enrollment: <a href="https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10" class="external-link uri">https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10</a>
+</li>
+</ul></li>
+<li><p>Download the Excel files manually</p></li>
+<li>
+<p>Use <code><a href="reference/import_local_enrollment.html">import_local_enrollment()</a></code> to load the data:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/import_local_enrollment.html">import_local_enrollment</a></span><span class="op">(</span><span class="st">"~/Downloads/district-fall-enrollment.xlsx"</span>, <span class="fl">2024</span>, <span class="st">"district"</span><span class="op">)</span></span></code></pre></div>
+</li>
+</ol></div>
+<div class="section level2">
+<h2 id="key-functions">Key Functions<a class="anchor" aria-label="anchor" href="#key-functions"></a></h2>
+<div class="section level3">
+<h3 id="main-api">Main API<a class="anchor" aria-label="anchor" href="#main-api"></a></h3>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Fetch enrollment data for a single year</span></span>
+<span><span class="va">enr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span>  <span class="co"># 2023-24 school year</span></span>
+<span></span>
+<span><span class="co"># Fetch multiple years</span></span>
+<span><span class="va">enr_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fl">2020</span><span class="op">:</span><span class="fl">2024</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get wide format (one row per district/school)</span></span>
+<span><span class="va">enr_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, tidy <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Import manually downloaded file</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/import_local_enrollment.html">import_local_enrollment</a></span><span class="op">(</span><span class="st">"path/to/file.xlsx"</span>, <span class="fl">2024</span>, <span class="st">"school"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="helper-functions">Helper Functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a></h3>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Available years</span></span>
+<span><span class="fu"><a href="reference/get_available_years.html">get_available_years</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Check cache</span></span>
+<span><span class="fu"><a href="reference/cache_exists.html">cache_exists</a></span><span class="op">(</span><span class="fl">2024</span>, <span class="st">"tidy"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/clear_cache.html">clear_cache</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="data-structure">Data Structure<a class="anchor" aria-label="anchor" href="#data-structure"></a></h2>
+<div class="section level3">
+<h3 id="tidy-format-default">Tidy Format (default)<a class="anchor" aria-label="anchor" href="#tidy-format-default"></a></h3>
+<p>One row per district/school/subgroup/grade_level combination:</p>
+<table class="table"><thead><tr class="header"><th>Column</th>
+<th>Description</th>
+</tr></thead><tbody><tr class="odd"><td><code>end_year</code></td>
+<td>School year end (2024 = 2023-24)</td>
+</tr><tr class="even"><td><code>type</code></td>
+<td>“State”, “District”, or “Campus”</td>
+</tr><tr class="odd"><td><code>district_id</code></td>
+<td>District identifier</td>
+</tr><tr class="even"><td><code>district_name</code></td>
+<td>District name</td>
+</tr><tr class="odd"><td><code>campus_id</code></td>
+<td>School identifier</td>
+</tr><tr class="even"><td><code>campus_name</code></td>
+<td>School name</td>
+</tr><tr class="odd"><td><code>subgroup</code></td>
+<td>Demographic subgroup</td>
+</tr><tr class="even"><td><code>grade_level</code></td>
+<td>“TOTAL”, “PK”, “K”, “01”-“12”</td>
+</tr><tr class="odd"><td><code>n_students</code></td>
+<td>Enrollment count</td>
+</tr><tr class="even"><td><code>pct</code></td>
+<td>Percentage of total</td>
+</tr><tr class="odd"><td><code>is_state</code></td>
+<td>Boolean flag</td>
+</tr><tr class="even"><td><code>is_district</code></td>
+<td>Boolean flag</td>
+</tr><tr class="odd"><td><code>is_campus</code></td>
+<td>Boolean flag</td>
+</tr><tr class="even"><td><code>is_charter</code></td>
+<td>Boolean flag</td>
+</tr></tbody></table></div>
+<div class="section level3">
+<h3 id="subgroups">Subgroups<a class="anchor" aria-label="anchor" href="#subgroups"></a></h3>
+<p>Available subgroups depend on NH DOE reporting: - <strong>Total</strong>: <code>total_enrollment</code> - <strong>Grade levels</strong>: <code>grade_pk</code>, <code>grade_k</code>, <code>grade_01</code> through <code>grade_12</code></p>
+<p>Note: Demographics (race/ethnicity, gender) may not be available in standard enrollment reports.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="year-convention">Year Convention<a class="anchor" aria-label="anchor" href="#year-convention"></a></h2>
+<p><strong>CRITICAL</strong>: Years use END YEAR of the school year: - <code>2024</code> = 2023-24 school year - <code>2023</code> = 2022-23 school year</p>
+</div>
+<div class="section level2">
+<h2 id="test-coverage">Test Coverage<a class="anchor" aria-label="anchor" href="#test-coverage"></a></h2>
+<p>Current tests verify: - Utility functions (safe_numeric, year validation, name cleaning) - Cache management - Data structure validation - Local file import functionality</p>
+</div>
+<div class="section level2">
+<h2 id="fidelity-requirement">Fidelity Requirement<a class="anchor" aria-label="anchor" href="#fidelity-requirement"></a></h2>
+<p><strong>tidy=TRUE output MUST maintain fidelity to raw, unprocessed data:</strong> - State totals should equal sum of district totals - No impossible zeros at state level - No Inf/NaN in percentages - Enrollment counts must match source data</p>
+</div>
+<div class="section level2">
+<h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a></h2>
+<div class="section level3">
+<h3 id="iplatform-may-require-browser-access">“iPlatform may require browser access”<a class="anchor" aria-label="anchor" href="#iplatform-may-require-browser-access"></a></h3>
+<p>This is expected. Visit the URLs provided and download files manually.</p>
+</div>
+<div class="section level3">
+<h3 id="stale-cache-data">Stale cache data<a class="anchor" aria-label="anchor" href="#stale-cache-data"></a></h3>
+<p>Clear the cache:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/clear_cache.html">clear_cache</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="year-not-found">Year not found<a class="anchor" aria-label="anchor" href="#year-not-found"></a></h3>
+<p>Check available years:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/get_available_years.html">get_available_years</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="todo">TODO<a class="anchor" aria-label="anchor" href="#todo"></a></h2>
+<ul class="task-list"><li><label><input type="checkbox">Investigate browser automation (RSelenium) for automated downloads</label></li>
+<li><label><input type="checkbox">Consider bundling static data files in <code>inst/extdata/</code> like rischooldata</label></li>
+<li><label><input type="checkbox">Add demographic data if/when available from NH DOE</label></li>
+</ul><hr></div>
+<div class="section level2">
+<h2 id="live-pipeline-testing">LIVE Pipeline Testing<a class="anchor" aria-label="anchor" href="#live-pipeline-testing"></a></h2>
+<p>This package includes <code>tests/testthat/test-pipeline-live.R</code> with LIVE network tests.</p>
+<div class="section level3">
+<h3 id="test-categories">Test Categories:<a class="anchor" aria-label="anchor" href="#test-categories"></a></h3>
+<ol style="list-style-type: decimal"><li>URL Availability - HTTP 200 checks</li>
+<li>File Download - Verify actual file (not HTML error)</li>
+<li>File Parsing - readxl/readr succeeds</li>
+<li>Column Structure - Expected columns exist</li>
+<li>get_raw_enr() - Raw data function works</li>
+<li>Data Quality - No Inf/NaN, non-negative counts</li>
+<li>Aggregation - State total &gt; 0</li>
+<li>Output Fidelity - tidy=TRUE matches raw</li>
+</ol></div>
+<div class="section level3">
+<h3 id="running-tests">Running Tests:<a class="anchor" aria-label="anchor" href="#running-tests"></a></h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span>filter <span class="op">=</span> <span class="st">"pipeline-live"</span><span class="op">)</span></span></code></pre></div>
+<p>See <code>state-schooldata/CLAUDE.md</code> for complete testing framework documentation.</p>
+</div>
+</div>
 </div>
 
-  </main></div>
+
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

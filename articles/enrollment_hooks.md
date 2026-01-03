@@ -1,5 +1,18 @@
 # 10 Insights from New Hampshire School Enrollment Data
 
+## Note: Data Access
+
+The NH DOE iPlatform requires browser-based access. To run this vignette
+with real data:
+
+1.  Visit <https://my.doe.nh.gov/iPlatform>
+2.  Download the enrollment reports
+3.  Use
+    [`import_local_enrollment()`](https://almartin82.github.io/nhschooldata/reference/import_local_enrollment.md)
+    to load the data
+
+The code examples below show how to analyze the data once loaded.
+
 ``` r
 library(nhschooldata)
 library(dplyr)
@@ -22,16 +35,6 @@ statewide <- enr %>%
   select(end_year, n_students)
 
 statewide
-#>   end_year n_students
-#> 1     2016          0
-#> 2     2017          0
-#> 3     2018          0
-#> 4     2019          0
-#> 5     2020          0
-#> 6     2021          0
-#> 7     2022          0
-#> 8     2023          0
-#> 9     2024          0
 ```
 
 ``` r
@@ -46,11 +49,6 @@ ggplot(statewide, aes(x = end_year, y = n_students)) +
     y = "Students"
   )
 ```
-
-![New Hampshire statewide enrollment
-2016-2024](enrollment_hooks_files/figure-html/statewide-chart-1.png)
-
-New Hampshire statewide enrollment 2016-2024
 
 ## Top Districts: Manchester Leads, But Suburbs Grow
 
@@ -67,8 +65,6 @@ top_districts <- enr_2024 %>%
   select(district_name, n_students)
 
 top_districts
-#> [1] district_name n_students   
-#> <0 rows> (or 0-length row.names)
 ```
 
 ``` r
@@ -86,11 +82,6 @@ top_districts %>%
     y = NULL
   )
 ```
-
-![Top 10 New Hampshire school districts by
-enrollment](enrollment_hooks_files/figure-html/top-districts-chart-1.png)
-
-Top 10 New Hampshire school districts by enrollment
 
 ## Demographics: New Hampshire Is Getting More Diverse
 
@@ -112,13 +103,6 @@ demographics_wide <- demographics %>%
   pivot_wider(names_from = subgroup, values_from = pct)
 
 demographics_wide
-#> # A tibble: 4 × 6
-#>   end_year white black hispanic asian multiracial
-#>      <int> <dbl> <dbl>    <dbl> <dbl>       <dbl>
-#> 1     2016   NaN   NaN      NaN   NaN         NaN
-#> 2     2018   NaN   NaN      NaN   NaN         NaN
-#> 3     2020   NaN   NaN      NaN   NaN         NaN
-#> 4     2024   NaN   NaN      NaN   NaN         NaN
 ```
 
 ``` r
@@ -143,11 +127,6 @@ demographics %>%
   theme(legend.position = "right")
 ```
 
-![Demographic shifts in New Hampshire
-schools](enrollment_hooks_files/figure-html/demographics-chart-1.png)
-
-Demographic shifts in New Hampshire schools
-
 ## Regional Divergence: Seacoast Steady, North Country Declining
 
 Coastal communities are holding relatively steady while the North
@@ -171,8 +150,6 @@ regional <- enr_regional %>%
   summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
 
 regional
-#> # A tibble: 0 × 3
-#> # ℹ 3 variables: end_year <int>, region <chr>, total <int>
 ```
 
 ``` r
@@ -190,11 +167,6 @@ ggplot(regional, aes(x = end_year, y = total, color = region)) +
   ) +
   theme(legend.position = "right")
 ```
-
-![Regional enrollment trends in New
-Hampshire](enrollment_hooks_files/figure-html/regional-chart-1.png)
-
-Regional enrollment trends in New Hampshire
 
 ## Grade-Level Trends: The Pipeline Is Narrowing
 
@@ -217,52 +189,6 @@ grades <- enr_grades %>%
   ))
 
 grades
-#>    end_year grade_level n_students  grade_label
-#> 1      2016           K          0 Kindergarten
-#> 2      2016          01          0    1st Grade
-#> 3      2016          05          0    5th Grade
-#> 4      2016          09          0    9th Grade
-#> 5      2016          12          0   12th Grade
-#> 6      2017           K          0 Kindergarten
-#> 7      2017          01          0    1st Grade
-#> 8      2017          05          0    5th Grade
-#> 9      2017          09          0    9th Grade
-#> 10     2017          12          0   12th Grade
-#> 11     2018           K          0 Kindergarten
-#> 12     2018          01          0    1st Grade
-#> 13     2018          05          0    5th Grade
-#> 14     2018          09          0    9th Grade
-#> 15     2018          12          0   12th Grade
-#> 16     2019           K          0 Kindergarten
-#> 17     2019          01          0    1st Grade
-#> 18     2019          05          0    5th Grade
-#> 19     2019          09          0    9th Grade
-#> 20     2019          12          0   12th Grade
-#> 21     2020           K          0 Kindergarten
-#> 22     2020          01          0    1st Grade
-#> 23     2020          05          0    5th Grade
-#> 24     2020          09          0    9th Grade
-#> 25     2020          12          0   12th Grade
-#> 26     2021           K          0 Kindergarten
-#> 27     2021          01          0    1st Grade
-#> 28     2021          05          0    5th Grade
-#> 29     2021          09          0    9th Grade
-#> 30     2021          12          0   12th Grade
-#> 31     2022           K          0 Kindergarten
-#> 32     2022          01          0    1st Grade
-#> 33     2022          05          0    5th Grade
-#> 34     2022          09          0    9th Grade
-#> 35     2022          12          0   12th Grade
-#> 36     2023           K          0 Kindergarten
-#> 37     2023          01          0    1st Grade
-#> 38     2023          05          0    5th Grade
-#> 39     2023          09          0    9th Grade
-#> 40     2023          12          0   12th Grade
-#> 41     2024           K          0 Kindergarten
-#> 42     2024          01          0    1st Grade
-#> 43     2024          05          0    5th Grade
-#> 44     2024          09          0    9th Grade
-#> 45     2024          12          0   12th Grade
 ```
 
 ``` r
@@ -285,11 +211,6 @@ grades %>%
   theme(legend.position = "right")
 ```
 
-![Enrollment by grade level over
-time](enrollment_hooks_files/figure-html/grade-level-chart-1.png)
-
-Enrollment by grade level over time
-
 ## District Size Distribution: Many Tiny Districts
 
 New Hampshire has 45 districts with fewer than 300 students. Many of
@@ -309,8 +230,6 @@ district_sizes <- enr_2024 %>%
                                          "Medium (1,000-2,999)", "Large (3,000+)")))
 
 district_sizes
-#> [1] size n   
-#> <0 rows> (or 0-length row.names)
 ```
 
 ``` r
@@ -328,11 +247,6 @@ ggplot(district_sizes, aes(x = size, y = n, fill = size)) +
   ) +
   theme(legend.position = "none")
 ```
-
-![Distribution of district sizes in New
-Hampshire](enrollment_hooks_files/figure-html/district-size-chart-1.png)
-
-Distribution of district sizes in New Hampshire
 
 ## Summary
 

@@ -451,7 +451,7 @@ Functions for importing manually downloaded data
 ## Package
 
 - [`nhschooldata-package`](https://almartin82.github.io/nhschooldata/reference/nhschooldata-package.md)
-  : nhschooldata: Fetch and Process New Hampshire School Enrollment Data
+  : nhschooldata: New Hampshire School Data
 
 # Articles
 
