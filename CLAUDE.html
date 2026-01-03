@@ -49,6 +49,41 @@
 <li>NEVER add Co-Authored-By lines mentioning Claude or Anthropic</li>
 <li>Keep commit messages focused on what changed, not how it was written</li>
 </ul><hr></div>
+<div class="section level2">
+<h2 id="local-testing-before-prs-required">Local Testing Before PRs (REQUIRED)<a class="anchor" aria-label="anchor" href="#local-testing-before-prs-required"></a></h2>
+<p><strong>PRs will not be merged until CI passes.</strong> Run these checks locally BEFORE opening a PR:</p>
+<div class="section level3">
+<h3 id="ci-checks-that-must-pass">CI Checks That Must Pass<a class="anchor" aria-label="anchor" href="#ci-checks-that-must-pass"></a></h3>
+<table class="table"><colgroup><col width="18%"><col width="40%"><col width="40%"></colgroup><thead><tr class="header"><th>Check</th>
+<th>Local Command</th>
+<th>What It Tests</th>
+</tr></thead><tbody><tr class="odd"><td>R-CMD-check</td>
+<td><code>devtools::check()</code></td>
+<td>Package builds, tests pass, no errors/warnings</td>
+</tr><tr class="even"><td>Python tests</td>
+<td><code>pytest tests/test_pynhschooldata.py -v</code></td>
+<td>Python wrapper works correctly</td>
+</tr><tr class="odd"><td>pkgdown</td>
+<td><code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code></td>
+<td>Documentation and vignettes render</td>
+</tr></tbody></table></div>
+<div class="section level3">
+<h3 id="quick-commands">Quick Commands<a class="anchor" aria-label="anchor" href="#quick-commands"></a></h3>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># R package check (required)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">check</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Python tests (required)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">"pip install -e ./pynhschooldata &amp;&amp; pytest tests/test_pynhschooldata.py -v"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># pkgdown build (required)</span></span>
+<span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">build_site</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="pre-pr-checklist">Pre-PR Checklist<a class="anchor" aria-label="anchor" href="#pre-pr-checklist"></a></h3>
+<p>Before opening a PR, verify: - [ ] <code>devtools::check()</code> — 0 errors, 0 warnings - [ ] <code>pytest tests/test_pynhschooldata.py</code> — all tests pass - [ ] <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> — builds without errors - [ ] Vignettes render (no <code>eval=FALSE</code> hacks)</p>
+<hr></div>
+</div>
 </div>
 <div class="section level1">
 <h1 id="nhschooldata-package-documentation">nhschooldata Package Documentation<a class="anchor" aria-label="anchor" href="#nhschooldata-package-documentation"></a></h1>
@@ -74,7 +109,7 @@
 <li><p>Download the Excel files manually</p></li>
 <li>
 <p>Use <code><a href="reference/import_local_enrollment.html">import_local_enrollment()</a></code> to load the data:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/import_local_enrollment.html">import_local_enrollment</a></span><span class="op">(</span><span class="st">"~/Downloads/district-fall-enrollment.xlsx"</span>, <span class="fl">2024</span>, <span class="st">"district"</span><span class="op">)</span></span></code></pre></div>
 </li>
 </ol></div>
@@ -82,7 +117,7 @@
 <h2 id="key-functions">Key Functions<a class="anchor" aria-label="anchor" href="#key-functions"></a></h2>
 <div class="section level3">
 <h3 id="main-api">Main API<a class="anchor" aria-label="anchor" href="#main-api"></a></h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch enrollment data for a single year</span></span>
 <span><span class="va">enr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span>  <span class="co"># 2023-24 school year</span></span>
 <span></span>
@@ -97,7 +132,7 @@
 </div>
 <div class="section level3">
 <h3 id="helper-functions">Helper Functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a></h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Available years</span></span>
 <span><span class="fu"><a href="reference/get_available_years.html">get_available_years</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -169,13 +204,13 @@
 <div class="section level3">
 <h3 id="stale-cache-data">Stale cache data<a class="anchor" aria-label="anchor" href="#stale-cache-data"></a></h3>
 <p>Clear the cache:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/clear_cache.html">clear_cache</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="year-not-found">Year not found<a class="anchor" aria-label="anchor" href="#year-not-found"></a></h3>
 <p>Check available years:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/get_available_years.html">get_available_years</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -201,7 +236,7 @@
 </ol></div>
 <div class="section level3">
 <h3 id="running-tests">Running Tests:<a class="anchor" aria-label="anchor" href="#running-tests"></a></h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span>filter <span class="op">=</span> <span class="st">"pipeline-live"</span><span class="op">)</span></span></code></pre></div>
 <p>See <code>state-schooldata/CLAUDE.md</code> for complete testing framework documentation.</p>
 </div>
