@@ -1,8 +1,8 @@
 ---
-title: "10 Insights from New Hampshire School Enrollment Data"
+title: "15 Insights from New Hampshire School Enrollment Data"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{10 Insights from New Hampshire School Enrollment Data}
+  %\VignetteIndexEntry{15 Insights from New Hampshire School Enrollment Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -42,7 +42,7 @@ theme_set(theme_minimal(base_size = 14))
 New Hampshire's public school enrollment reflects the state's demographic challenges - an aging population and declining birth rates leading to gradual enrollment decline.
 
 ```{r statewide-data}
-enr <- fetch_enr_multi(2016:2024)
+enr <- fetch_enr_multi(2016:2024, use_cache = TRUE)
 
 statewide <- enr %>%
   filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
@@ -69,7 +69,7 @@ ggplot(statewide, aes(x = end_year, y = n_students)) +
 Manchester remains the largest district, but suburban communities like Bedford are gaining while urban centers shrink.
 
 ```{r top-districts-data}
-enr_2024 <- fetch_enr(2024)
+enr_2024 <- fetch_enr(2024, use_cache = TRUE)
 
 top_districts <- enr_2024 %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
@@ -101,7 +101,7 @@ top_districts %>%
 Hispanic and multiracial students are among the fastest-growing demographic groups.
 
 ```{r demographics-data}
-enr_demo <- fetch_enr_multi(c(2016, 2018, 2020, 2024))
+enr_demo <- fetch_enr_multi(c(2016, 2018, 2020, 2024, use_cache = TRUE))
 
 demographics <- enr_demo %>%
   filter(is_state, grade_level == "TOTAL",
@@ -147,7 +147,7 @@ Coastal communities are holding relatively steady while the North Country has ex
 seacoast <- c("Portsmouth", "Dover", "Rochester", "Exeter", "Hampton")
 north_country <- c("Berlin", "Colebrook", "Lancaster", "Littleton", "Gorham")
 
-enr_regional <- fetch_enr_multi(c(2016, 2018, 2021, 2024))
+enr_regional <- fetch_enr_multi(c(2016, 2018, 2021, 2024, use_cache = TRUE))
 
 regional <- enr_regional %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
@@ -184,7 +184,7 @@ ggplot(regional, aes(x = end_year, y = total, color = region)) +
 Kindergarten enrollment trends signal potential future decline, as fewer students enter the system each year.
 
 ```{r grade-level-data}
-enr_grades <- fetch_enr_multi(2016:2024)
+enr_grades <- fetch_enr_multi(2016:2024, use_cache = TRUE)
 
 grades <- enr_grades %>%
   filter(is_state, subgroup == "total_enrollment",
@@ -257,6 +257,190 @@ ggplot(district_sizes, aes(x = size, y = n, fill = size)) +
   theme(legend.position = "none")
 ```
 
+## Nashua vs. Manchester: The Big Two Diverge
+
+New Hampshire's two largest cities are on different trajectories. Nashua has held steadier than Manchester in recent years.
+
+```{r big-two-data}
+big_two <- enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         grepl("Manchester|Nashua", district_name)) %>%
+  mutate(city = ifelse(grepl("Manchester", district_name), "Manchester", "Nashua")) %>%
+  select(end_year, city, n_students)
+
+big_two
+```
+
+```{r big-two-chart, fig.cap="Manchester vs Nashua enrollment trajectories"}
+ggplot(big_two, aes(x = end_year, y = n_students, color = city)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("Manchester" = "#2E86AB", "Nashua" = "#E94F37")) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(
+    title = "Manchester vs. Nashua Enrollment (2016-2024)",
+    subtitle = "New Hampshire's two largest districts on different paths",
+    x = "Year",
+    y = "Students",
+    color = "City"
+  ) +
+  theme(legend.position = "right")
+```
+
+## The I-93 Corridor Holds Steady
+
+Communities along Interstate 93 from Concord to the Massachusetts border show more stability than rural areas.
+
+```{r i93-data}
+i93_corridor <- c("Concord", "Bow", "Hooksett", "Manchester", "Bedford", "Londonderry", "Derry", "Salem")
+
+i93_districts <- enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(corridor = grepl(paste(i93_corridor, collapse = "|"), district_name)) %>%
+  group_by(end_year, corridor) %>%
+  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop") %>%
+  mutate(location = ifelse(corridor, "I-93 Corridor", "Rest of State"))
+
+# Calculate percent of state by corridor
+i93_pct <- i93_districts %>%
+  group_by(end_year) %>%
+  mutate(pct = total / sum(total) * 100) %>%
+  filter(corridor)
+
+i93_pct
+```
+
+```{r i93-chart, fig.cap="I-93 corridor share of state enrollment"}
+ggplot(i93_pct, aes(x = end_year, y = pct)) +
+  geom_line(color = "#2E86AB", linewidth = 1.2) +
+  geom_point(color = "#2E86AB", size = 3) +
+  geom_hline(yintercept = 50, linetype = "dashed", color = "gray50") +
+  scale_y_continuous(labels = function(x) paste0(x, "%"), limits = c(40, 60)) +
+  labs(
+    title = "I-93 Corridor Share of NH Enrollment (2016-2024)",
+    subtitle = "Communities from Concord to Salem hold over half of state students",
+    x = "Year",
+    y = "Percent of State Enrollment"
+  )
+```
+
+## Berlin: The North Country's Largest Town Shrinks
+
+Berlin, once a thriving mill town, has seen dramatic enrollment losses as the paper industry declined.
+
+```{r berlin-data}
+north_towns <- c("Berlin", "Littleton", "Lancaster", "Colebrook")
+
+north_enrollment <- enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  filter(grepl(paste(north_towns, collapse = "|"), district_name)) %>%
+  mutate(town = case_when(
+    grepl("Berlin", district_name) ~ "Berlin",
+    grepl("Littleton", district_name) ~ "Littleton",
+    grepl("Lancaster", district_name) ~ "Lancaster",
+    grepl("Colebrook", district_name) ~ "Colebrook",
+    TRUE ~ "Other"
+  )) %>%
+  select(end_year, town, n_students)
+
+north_enrollment
+```
+
+```{r berlin-chart, fig.cap="North Country town enrollment trends"}
+ggplot(north_enrollment, aes(x = end_year, y = n_students, color = town)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("Berlin" = "#2E86AB", "Littleton" = "#E94F37",
+                                "Lancaster" = "#F6AE2D", "Colebrook" = "#86BA90")) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(
+    title = "North Country Town Enrollment (2016-2024)",
+    subtitle = "Berlin leads the region but all towns face decline",
+    x = "Year",
+    y = "Students",
+    color = "Town"
+  ) +
+  theme(legend.position = "right")
+```
+
+## Portsmouth's Urban Renewal Attracts Families
+
+The Seacoast's anchor city has bucked state trends with its revitalized downtown and strong job market.
+
+```{r seacoast-data}
+seacoast_towns <- c("Portsmouth", "Dover", "Rochester", "Exeter", "Hampton", "Newmarket")
+
+seacoast_enrollment <- enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  filter(grepl(paste(seacoast_towns, collapse = "|"), district_name)) %>%
+  mutate(town = case_when(
+    grepl("Portsmouth", district_name) ~ "Portsmouth",
+    grepl("Dover", district_name) ~ "Dover",
+    grepl("Rochester", district_name) ~ "Rochester",
+    grepl("Exeter", district_name) ~ "Exeter",
+    grepl("Hampton", district_name) ~ "Hampton",
+    grepl("Newmarket", district_name) ~ "Newmarket",
+    TRUE ~ "Other"
+  )) %>%
+  filter(town != "Other") %>%
+  select(end_year, town, n_students)
+
+seacoast_enrollment
+```
+
+```{r seacoast-chart, fig.cap="Seacoast region town enrollment trends"}
+ggplot(seacoast_enrollment, aes(x = end_year, y = n_students, color = town)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  scale_color_brewer(palette = "Set2") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(
+    title = "Seacoast Region Enrollment (2016-2024)",
+    subtitle = "Coastal communities show varying resilience",
+    x = "Year",
+    y = "Students",
+    color = "Town"
+  ) +
+  theme(legend.position = "right")
+```
+
+## The Lakes Region: Tourism vs. Year-Round Population
+
+Towns around Lake Winnipesaukee face unique challenges as seasonal residents outnumber year-round families.
+
+```{r lakes-data}
+lakes_towns <- c("Laconia", "Meredith", "Wolfeboro", "Gilford", "Alton")
+
+lakes_enrollment <- enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  filter(grepl(paste(lakes_towns, collapse = "|"), district_name)) %>%
+  group_by(end_year) %>%
+  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+# Calculate year-over-year change
+lakes_change <- lakes_enrollment %>%
+  mutate(
+    change = total - lag(total),
+    pct_change = change / lag(total) * 100
+  )
+
+lakes_change
+```
+
+```{r lakes-chart, fig.cap="Lakes Region enrollment trend"}
+ggplot(lakes_enrollment, aes(x = end_year, y = total)) +
+  geom_line(color = "#2E86AB", linewidth = 1.2) +
+  geom_point(color = "#2E86AB", size = 3) +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "#E94F37") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(
+    title = "Lakes Region Combined Enrollment (2016-2024)",
+    subtitle = "Laconia, Meredith, Wolfeboro, Gilford, and Alton area schools",
+    x = "Year",
+    y = "Students"
+  )
+```
+
 ## Summary
 
 New Hampshire's public school enrollment tells a story of demographic transition:
@@ -265,3 +449,5 @@ New Hampshire's public school enrollment tells a story of demographic transition
 - **Regional divergence**: Coastal areas stable, rural North Country experiencing steeper declines
 - **Diversification**: Hispanic and multiracial student populations growing
 - **Many small districts**: Districts sharing administration through SAUs
+- **Urban corridors matter**: The I-93 corridor and Seacoast regions are most resilient
+- **Tourism towns struggle**: Lakes Region faces year-round population challenges
