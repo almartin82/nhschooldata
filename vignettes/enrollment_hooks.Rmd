@@ -43,7 +43,7 @@ theme_set(theme_minimal(base_size = 14))
 New Hampshire's public school enrollment reflects the state's demographic challenges - an aging population and declining birth rates leading to gradual enrollment decline.
 
 ```{r statewide-data}
-enr <- fetch_enr_multi(2016:2024)
+enr <- fetch_enr_multi(2016:2024, use_cache = TRUE)
 
 statewide <- enr %>%
   filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
@@ -70,7 +70,7 @@ ggplot(statewide, aes(x = end_year, y = n_students)) +
 Manchester remains the largest district, but suburban communities like Bedford are gaining while urban centers shrink.
 
 ```{r top-districts-data}
-enr_2024 <- fetch_enr(2024)
+enr_2024 <- fetch_enr(2024, use_cache = TRUE)
 
 top_districts <- enr_2024 %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
@@ -185,7 +185,7 @@ ggplot(regional, aes(x = end_year, y = total, color = region)) +
 Kindergarten enrollment trends signal potential future decline, as fewer students enter the system each year.
 
 ```{r grade-level-data}
-enr_grades <- fetch_enr_multi(2016:2024)
+enr_grades <- fetch_enr_multi(2016:2024, use_cache = TRUE)
 
 grades <- enr_grades %>%
   filter(is_state, subgroup == "total_enrollment",
