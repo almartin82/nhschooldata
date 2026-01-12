@@ -28,7 +28,7 @@ demographic challenges - an aging population and declining birth rates
 leading to gradual enrollment decline.
 
 ``` r
-enr <- fetch_enr_multi(2016:2024)
+enr <- fetch_enr_multi(2016:2024, use_cache = TRUE)
 
 statewide <- enr %>%
   filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
@@ -56,7 +56,7 @@ Manchester remains the largest district, but suburban communities like
 Bedford are gaining while urban centers shrink.
 
 ``` r
-enr_2024 <- fetch_enr(2024)
+enr_2024 <- fetch_enr(2024, use_cache = TRUE)
 
 top_districts <- enr_2024 %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
@@ -174,7 +174,7 @@ Kindergarten enrollment trends signal potential future decline, as fewer
 students enter the system each year.
 
 ``` r
-enr_grades <- fetch_enr_multi(2016:2024)
+enr_grades <- fetch_enr_multi(2016:2024, use_cache = TRUE)
 
 grades <- enr_grades %>%
   filter(is_state, subgroup == "total_enrollment",
