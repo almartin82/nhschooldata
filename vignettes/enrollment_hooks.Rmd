@@ -102,7 +102,7 @@ top_districts %>%
 Hispanic and multiracial students are among the fastest-growing demographic groups.
 
 ```{r demographics-data}
-enr_demo <- fetch_enr_multi(c(2016, 2018, 2020, 2024))
+enr_demo <- fetch_enr_multi(c(2016, 2018, 2020, 2024), use_cache = TRUE)
 
 demographics <- enr_demo %>%
   filter(is_state, grade_level == "TOTAL",
@@ -148,7 +148,7 @@ Coastal communities are holding relatively steady while the North Country has ex
 seacoast <- c("Portsmouth", "Dover", "Rochester", "Exeter", "Hampton")
 north_country <- c("Berlin", "Colebrook", "Lancaster", "Littleton", "Gorham")
 
-enr_regional <- fetch_enr_multi(c(2016, 2018, 2021, 2024))
+enr_regional <- fetch_enr_multi(c(2016, 2018, 2021, 2024), use_cache = TRUE)
 
 regional <- enr_regional %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
