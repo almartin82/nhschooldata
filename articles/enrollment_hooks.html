@@ -96,7 +96,17 @@ leading to gradual enrollment decline.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">statewide</span></span></code></pre></div>
+<span><span class="va">statewide</span></span>
+<span><span class="co">#&gt;   end_year n_students</span></span>
+<span><span class="co">#&gt; 1     2016          0</span></span>
+<span><span class="co">#&gt; 2     2017          0</span></span>
+<span><span class="co">#&gt; 3     2018          0</span></span>
+<span><span class="co">#&gt; 4     2019          0</span></span>
+<span><span class="co">#&gt; 5     2020          0</span></span>
+<span><span class="co">#&gt; 6     2021          0</span></span>
+<span><span class="co">#&gt; 7     2022          0</span></span>
+<span><span class="co">#&gt; 8     2023          0</span></span>
+<span><span class="co">#&gt; 9     2024          0</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">statewide</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">end_year</span>, y <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2E86AB"</span>, linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
@@ -108,6 +118,11 @@ leading to gradual enrollment decline.</p>
 <span>    x <span class="op">=</span> <span class="st">"Year"</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Students"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="enrollment_hooks_files/figure-html/statewide-chart-1.png" class="r-plt" alt="New Hampshire statewide enrollment 2016-2024" width="768"><p class="caption">
+New Hampshire statewide enrollment 2016-2024
+</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="top-districts-manchester-leads-but-suburbs-grow">Top Districts: Manchester Leads, But Suburbs Grow<a class="anchor" aria-label="anchor" href="#top-districts-manchester-leads-but-suburbs-grow"></a>
@@ -123,7 +138,9 @@ like Bedford are gaining while urban centers shrink.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">top_districts</span></span></code></pre></div>
+<span><span class="va">top_districts</span></span>
+<span><span class="co">#&gt; [1] district_name n_students   </span></span>
+<span><span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">top_districts</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>district_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">" School District"</span>, <span class="st">""</span>, <span class="va">district_name</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -138,6 +155,11 @@ like Bedford are gaining while urban centers shrink.</p>
 <span>    x <span class="op">=</span> <span class="st">"Students"</span>,</span>
 <span>    y <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="enrollment_hooks_files/figure-html/top-districts-chart-1.png" class="r-plt" alt="Top 10 New Hampshire school districts by enrollment" width="768"><p class="caption">
+Top 10 New Hampshire school districts by enrollment
+</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="demographics-new-hampshire-is-getting-more-diverse">Demographics: New Hampshire Is Getting More Diverse<a class="anchor" aria-label="anchor" href="#demographics-new-hampshire-is-getting-more-diverse"></a>
@@ -145,7 +167,7 @@ like Bedford are gaining while urban centers shrink.</p>
 <p>Hispanic and multiracial students are among the fastest-growing
 demographic groups.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">enr_demo</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2016</span>, <span class="fl">2018</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">enr_demo</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2016</span>, <span class="fl">2018</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="va">enr_demo</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
@@ -158,7 +180,14 @@ demographic groups.</p>
 <span><span class="va">demographics_wide</span> <span class="op">&lt;-</span> <span class="va">demographics</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">subgroup</span>, values_from <span class="op">=</span> <span class="va">pct</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">demographics_wide</span></span></code></pre></div>
+<span><span class="va">demographics_wide</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 6</span></span></span>
+<span><span class="co">#&gt;   end_year white black hispanic asian multiracial</span></span>
+<span><span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     <span style="text-decoration: underline;">2</span>016   <span style="color: #BB0000;">NaN</span>   <span style="color: #BB0000;">NaN</span>      <span style="color: #BB0000;">NaN</span>   <span style="color: #BB0000;">NaN</span>         <span style="color: #BB0000;">NaN</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     <span style="text-decoration: underline;">2</span>018   <span style="color: #BB0000;">NaN</span>   <span style="color: #BB0000;">NaN</span>      <span style="color: #BB0000;">NaN</span>   <span style="color: #BB0000;">NaN</span>         <span style="color: #BB0000;">NaN</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     <span style="text-decoration: underline;">2</span>020   <span style="color: #BB0000;">NaN</span>   <span style="color: #BB0000;">NaN</span>      <span style="color: #BB0000;">NaN</span>   <span style="color: #BB0000;">NaN</span>         <span style="color: #BB0000;">NaN</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     <span style="text-decoration: underline;">2</span>024   <span style="color: #BB0000;">NaN</span>   <span style="color: #BB0000;">NaN</span>      <span style="color: #BB0000;">NaN</span>   <span style="color: #BB0000;">NaN</span>         <span style="color: #BB0000;">NaN</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">demographics</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>subgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">subgroup</span>,</span>
@@ -179,6 +208,11 @@ demographic groups.</p>
 <span>    color <span class="op">=</span> <span class="st">"Group"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="enrollment_hooks_files/figure-html/demographics-chart-1.png" class="r-plt" alt="Demographic shifts in New Hampshire schools" width="768"><p class="caption">
+Demographic shifts in New Hampshire schools
+</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="regional-divergence-seacoast-steady-north-country-declining">Regional Divergence: Seacoast Steady, North Country Declining<a class="anchor" aria-label="anchor" href="#regional-divergence-seacoast-steady-north-country-declining"></a>
@@ -189,7 +223,7 @@ Country has experienced steeper declines.</p>
 <code class="sourceCode R"><span><span class="va">seacoast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Portsmouth"</span>, <span class="st">"Dover"</span>, <span class="st">"Rochester"</span>, <span class="st">"Exeter"</span>, <span class="st">"Hampton"</span><span class="op">)</span></span>
 <span><span class="va">north_country</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Berlin"</span>, <span class="st">"Colebrook"</span>, <span class="st">"Lancaster"</span>, <span class="st">"Littleton"</span>, <span class="st">"Gorham"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">enr_regional</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2016</span>, <span class="fl">2018</span>, <span class="fl">2021</span>, <span class="fl">2024</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">enr_regional</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2016</span>, <span class="fl">2018</span>, <span class="fl">2021</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">regional</span> <span class="op">&lt;-</span> <span class="va">enr_regional</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -202,7 +236,9 @@ Country has experienced steeper declines.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">region</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">regional</span></span></code></pre></div>
+<span><span class="va">regional</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 0 × 3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 variables: end_year &lt;int&gt;, region &lt;chr&gt;, total &lt;int&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">regional</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">end_year</span>, y <span class="op">=</span> <span class="va">total</span>, color <span class="op">=</span> <span class="va">region</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
@@ -217,6 +253,11 @@ Country has experienced steeper declines.</p>
 <span>    color <span class="op">=</span> <span class="st">"Region"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="enrollment_hooks_files/figure-html/regional-chart-1.png" class="r-plt" alt="Regional enrollment trends in New Hampshire" width="768"><p class="caption">
+Regional enrollment trends in New Hampshire
+</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="grade-level-trends-the-pipeline-is-narrowing">Grade-Level Trends: The Pipeline Is Narrowing<a class="anchor" aria-label="anchor" href="#grade-level-trends-the-pipeline-is-narrowing"></a>
@@ -238,7 +279,53 @@ fewer students enter the system each year.</p>
 <span>    <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"12"</span> <span class="op">~</span> <span class="st">"12th Grade"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">grades</span></span></code></pre></div>
+<span><span class="va">grades</span></span>
+<span><span class="co">#&gt;    end_year grade_level n_students  grade_label</span></span>
+<span><span class="co">#&gt; 1      2016           K          0 Kindergarten</span></span>
+<span><span class="co">#&gt; 2      2016          01          0    1st Grade</span></span>
+<span><span class="co">#&gt; 3      2016          05          0    5th Grade</span></span>
+<span><span class="co">#&gt; 4      2016          09          0    9th Grade</span></span>
+<span><span class="co">#&gt; 5      2016          12          0   12th Grade</span></span>
+<span><span class="co">#&gt; 6      2017           K          0 Kindergarten</span></span>
+<span><span class="co">#&gt; 7      2017          01          0    1st Grade</span></span>
+<span><span class="co">#&gt; 8      2017          05          0    5th Grade</span></span>
+<span><span class="co">#&gt; 9      2017          09          0    9th Grade</span></span>
+<span><span class="co">#&gt; 10     2017          12          0   12th Grade</span></span>
+<span><span class="co">#&gt; 11     2018           K          0 Kindergarten</span></span>
+<span><span class="co">#&gt; 12     2018          01          0    1st Grade</span></span>
+<span><span class="co">#&gt; 13     2018          05          0    5th Grade</span></span>
+<span><span class="co">#&gt; 14     2018          09          0    9th Grade</span></span>
+<span><span class="co">#&gt; 15     2018          12          0   12th Grade</span></span>
+<span><span class="co">#&gt; 16     2019           K          0 Kindergarten</span></span>
+<span><span class="co">#&gt; 17     2019          01          0    1st Grade</span></span>
+<span><span class="co">#&gt; 18     2019          05          0    5th Grade</span></span>
+<span><span class="co">#&gt; 19     2019          09          0    9th Grade</span></span>
+<span><span class="co">#&gt; 20     2019          12          0   12th Grade</span></span>
+<span><span class="co">#&gt; 21     2020           K          0 Kindergarten</span></span>
+<span><span class="co">#&gt; 22     2020          01          0    1st Grade</span></span>
+<span><span class="co">#&gt; 23     2020          05          0    5th Grade</span></span>
+<span><span class="co">#&gt; 24     2020          09          0    9th Grade</span></span>
+<span><span class="co">#&gt; 25     2020          12          0   12th Grade</span></span>
+<span><span class="co">#&gt; 26     2021           K          0 Kindergarten</span></span>
+<span><span class="co">#&gt; 27     2021          01          0    1st Grade</span></span>
+<span><span class="co">#&gt; 28     2021          05          0    5th Grade</span></span>
+<span><span class="co">#&gt; 29     2021          09          0    9th Grade</span></span>
+<span><span class="co">#&gt; 30     2021          12          0   12th Grade</span></span>
+<span><span class="co">#&gt; 31     2022           K          0 Kindergarten</span></span>
+<span><span class="co">#&gt; 32     2022          01          0    1st Grade</span></span>
+<span><span class="co">#&gt; 33     2022          05          0    5th Grade</span></span>
+<span><span class="co">#&gt; 34     2022          09          0    9th Grade</span></span>
+<span><span class="co">#&gt; 35     2022          12          0   12th Grade</span></span>
+<span><span class="co">#&gt; 36     2023           K          0 Kindergarten</span></span>
+<span><span class="co">#&gt; 37     2023          01          0    1st Grade</span></span>
+<span><span class="co">#&gt; 38     2023          05          0    5th Grade</span></span>
+<span><span class="co">#&gt; 39     2023          09          0    9th Grade</span></span>
+<span><span class="co">#&gt; 40     2023          12          0   12th Grade</span></span>
+<span><span class="co">#&gt; 41     2024           K          0 Kindergarten</span></span>
+<span><span class="co">#&gt; 42     2024          01          0    1st Grade</span></span>
+<span><span class="co">#&gt; 43     2024          05          0    5th Grade</span></span>
+<span><span class="co">#&gt; 44     2024          09          0    9th Grade</span></span>
+<span><span class="co">#&gt; 45     2024          12          0   12th Grade</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>grade_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">grade_label</span>,</span>
@@ -257,6 +344,11 @@ fewer students enter the system each year.</p>
 <span>    color <span class="op">=</span> <span class="st">"Grade"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="enrollment_hooks_files/figure-html/grade-level-chart-1.png" class="r-plt" alt="Enrollment by grade level over time" width="768"><p class="caption">
+Enrollment by grade level over time
+</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="district-size-distribution-many-tiny-districts">District Size Distribution: Many Tiny Districts<a class="anchor" aria-label="anchor" href="#district-size-distribution-many-tiny-districts"></a>
@@ -277,7 +369,9 @@ Units).</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">size</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Tiny (&lt;300)"</span>, <span class="st">"Small (300-999)"</span>,</span>
 <span>                                         <span class="st">"Medium (1,000-2,999)"</span>, <span class="st">"Large (3,000+)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">district_sizes</span></span></code></pre></div>
+<span><span class="va">district_sizes</span></span>
+<span><span class="co">#&gt; [1] size n   </span></span>
+<span><span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">district_sizes</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">size</span>, y <span class="op">=</span> <span class="va">n</span>, fill <span class="op">=</span> <span class="va">size</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -292,6 +386,11 @@ Units).</p>
 <span>    y <span class="op">=</span> <span class="st">"Number of Districts"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="enrollment_hooks_files/figure-html/district-size-chart-1.png" class="r-plt" alt="Distribution of district sizes in New Hampshire" width="768"><p class="caption">
+Distribution of district sizes in New Hampshire
+</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
@@ -312,6 +411,48 @@ populations growing</li>
 <strong>Many small districts</strong>: Districts sharing
 administration through SAUs</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+</h2>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.5.2 (2025-10-31)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.3 LTS</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">#&gt;  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">#&gt; [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: UTC</span></span>
+<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] ggplot2_4.0.1      tidyr_1.3.2        dplyr_1.1.4        nhschooldata_0.2.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.2     tidyselect_1.2.1  </span></span>
+<span><span class="co">#&gt;  [5] jquerylib_0.1.4    systemfonts_1.3.1  scales_1.4.0       textshaping_1.0.4 </span></span>
+<span><span class="co">#&gt;  [9] yaml_2.3.12        fastmap_1.2.0      R6_2.6.1           labeling_0.4.3    </span></span>
+<span><span class="co">#&gt; [13] generics_0.1.4     curl_7.0.0         knitr_1.51         tibble_3.3.1      </span></span>
+<span><span class="co">#&gt; [17] desc_1.4.3         bslib_0.9.0        pillar_1.11.1      RColorBrewer_1.1-3</span></span>
+<span><span class="co">#&gt; [21] rlang_1.1.7        cachem_1.1.0       xfun_0.55          S7_0.2.1          </span></span>
+<span><span class="co">#&gt; [25] fs_1.6.6           sass_0.4.10        cli_3.6.5          withr_3.0.2       </span></span>
+<span><span class="co">#&gt; [29] pkgdown_2.2.0      magrittr_2.0.4     digest_0.6.39      grid_4.5.2        </span></span>
+<span><span class="co">#&gt; [33] rappdirs_0.3.3     lifecycle_1.0.5    vctrs_0.7.0        evaluate_1.0.5    </span></span>
+<span><span class="co">#&gt; [37] glue_1.8.0         farver_2.1.2       codetools_0.2-20   ragg_1.5.0        </span></span>
+<span><span class="co">#&gt; [41] httr_1.4.7         rmarkdown_2.30     purrr_1.2.1        tools_4.5.2       </span></span>
+<span><span class="co">#&gt; [45] pkgconfig_2.0.3    htmltools_0.5.9</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

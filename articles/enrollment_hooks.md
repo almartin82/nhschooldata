@@ -35,6 +35,16 @@ statewide <- enr %>%
   select(end_year, n_students)
 
 statewide
+#>   end_year n_students
+#> 1     2016          0
+#> 2     2017          0
+#> 3     2018          0
+#> 4     2019          0
+#> 5     2020          0
+#> 6     2021          0
+#> 7     2022          0
+#> 8     2023          0
+#> 9     2024          0
 ```
 
 ``` r
@@ -49,6 +59,11 @@ ggplot(statewide, aes(x = end_year, y = n_students)) +
     y = "Students"
   )
 ```
+
+![New Hampshire statewide enrollment
+2016-2024](enrollment_hooks_files/figure-html/statewide-chart-1.png)
+
+New Hampshire statewide enrollment 2016-2024
 
 ## Top Districts: Manchester Leads, But Suburbs Grow
 
@@ -65,6 +80,8 @@ top_districts <- enr_2024 %>%
   select(district_name, n_students)
 
 top_districts
+#> [1] district_name n_students   
+#> <0 rows> (or 0-length row.names)
 ```
 
 ``` r
@@ -83,13 +100,18 @@ top_districts %>%
   )
 ```
 
+![Top 10 New Hampshire school districts by
+enrollment](enrollment_hooks_files/figure-html/top-districts-chart-1.png)
+
+Top 10 New Hampshire school districts by enrollment
+
 ## Demographics: New Hampshire Is Getting More Diverse
 
 Hispanic and multiracial students are among the fastest-growing
 demographic groups.
 
 ``` r
-enr_demo <- fetch_enr_multi(c(2016, 2018, 2020, 2024))
+enr_demo <- fetch_enr_multi(c(2016, 2018, 2020, 2024), use_cache = TRUE)
 
 demographics <- enr_demo %>%
   filter(is_state, grade_level == "TOTAL",
@@ -103,6 +125,13 @@ demographics_wide <- demographics %>%
   pivot_wider(names_from = subgroup, values_from = pct)
 
 demographics_wide
+#> # A tibble: 4 × 6
+#>   end_year white black hispanic asian multiracial
+#>      <int> <dbl> <dbl>    <dbl> <dbl>       <dbl>
+#> 1     2016   NaN   NaN      NaN   NaN         NaN
+#> 2     2018   NaN   NaN      NaN   NaN         NaN
+#> 3     2020   NaN   NaN      NaN   NaN         NaN
+#> 4     2024   NaN   NaN      NaN   NaN         NaN
 ```
 
 ``` r
@@ -127,6 +156,11 @@ demographics %>%
   theme(legend.position = "right")
 ```
 
+![Demographic shifts in New Hampshire
+schools](enrollment_hooks_files/figure-html/demographics-chart-1.png)
+
+Demographic shifts in New Hampshire schools
+
 ## Regional Divergence: Seacoast Steady, North Country Declining
 
 Coastal communities are holding relatively steady while the North
@@ -136,7 +170,7 @@ Country has experienced steeper declines.
 seacoast <- c("Portsmouth", "Dover", "Rochester", "Exeter", "Hampton")
 north_country <- c("Berlin", "Colebrook", "Lancaster", "Littleton", "Gorham")
 
-enr_regional <- fetch_enr_multi(c(2016, 2018, 2021, 2024))
+enr_regional <- fetch_enr_multi(c(2016, 2018, 2021, 2024), use_cache = TRUE)
 
 regional <- enr_regional %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
@@ -150,6 +184,8 @@ regional <- enr_regional %>%
   summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
 
 regional
+#> # A tibble: 0 × 3
+#> # ℹ 3 variables: end_year <int>, region <chr>, total <int>
 ```
 
 ``` r
@@ -167,6 +203,11 @@ ggplot(regional, aes(x = end_year, y = total, color = region)) +
   ) +
   theme(legend.position = "right")
 ```
+
+![Regional enrollment trends in New
+Hampshire](enrollment_hooks_files/figure-html/regional-chart-1.png)
+
+Regional enrollment trends in New Hampshire
 
 ## Grade-Level Trends: The Pipeline Is Narrowing
 
@@ -189,6 +230,52 @@ grades <- enr_grades %>%
   ))
 
 grades
+#>    end_year grade_level n_students  grade_label
+#> 1      2016           K          0 Kindergarten
+#> 2      2016          01          0    1st Grade
+#> 3      2016          05          0    5th Grade
+#> 4      2016          09          0    9th Grade
+#> 5      2016          12          0   12th Grade
+#> 6      2017           K          0 Kindergarten
+#> 7      2017          01          0    1st Grade
+#> 8      2017          05          0    5th Grade
+#> 9      2017          09          0    9th Grade
+#> 10     2017          12          0   12th Grade
+#> 11     2018           K          0 Kindergarten
+#> 12     2018          01          0    1st Grade
+#> 13     2018          05          0    5th Grade
+#> 14     2018          09          0    9th Grade
+#> 15     2018          12          0   12th Grade
+#> 16     2019           K          0 Kindergarten
+#> 17     2019          01          0    1st Grade
+#> 18     2019          05          0    5th Grade
+#> 19     2019          09          0    9th Grade
+#> 20     2019          12          0   12th Grade
+#> 21     2020           K          0 Kindergarten
+#> 22     2020          01          0    1st Grade
+#> 23     2020          05          0    5th Grade
+#> 24     2020          09          0    9th Grade
+#> 25     2020          12          0   12th Grade
+#> 26     2021           K          0 Kindergarten
+#> 27     2021          01          0    1st Grade
+#> 28     2021          05          0    5th Grade
+#> 29     2021          09          0    9th Grade
+#> 30     2021          12          0   12th Grade
+#> 31     2022           K          0 Kindergarten
+#> 32     2022          01          0    1st Grade
+#> 33     2022          05          0    5th Grade
+#> 34     2022          09          0    9th Grade
+#> 35     2022          12          0   12th Grade
+#> 36     2023           K          0 Kindergarten
+#> 37     2023          01          0    1st Grade
+#> 38     2023          05          0    5th Grade
+#> 39     2023          09          0    9th Grade
+#> 40     2023          12          0   12th Grade
+#> 41     2024           K          0 Kindergarten
+#> 42     2024          01          0    1st Grade
+#> 43     2024          05          0    5th Grade
+#> 44     2024          09          0    9th Grade
+#> 45     2024          12          0   12th Grade
 ```
 
 ``` r
@@ -211,6 +298,11 @@ grades %>%
   theme(legend.position = "right")
 ```
 
+![Enrollment by grade level over
+time](enrollment_hooks_files/figure-html/grade-level-chart-1.png)
+
+Enrollment by grade level over time
+
 ## District Size Distribution: Many Tiny Districts
 
 New Hampshire has 45 districts with fewer than 300 students. Many of
@@ -230,6 +322,8 @@ district_sizes <- enr_2024 %>%
                                          "Medium (1,000-2,999)", "Large (3,000+)")))
 
 district_sizes
+#> [1] size n   
+#> <0 rows> (or 0-length row.names)
 ```
 
 ``` r
@@ -248,6 +342,11 @@ ggplot(district_sizes, aes(x = size, y = n, fill = size)) +
   theme(legend.position = "none")
 ```
 
+![Distribution of district sizes in New
+Hampshire](enrollment_hooks_files/figure-html/district-size-chart-1.png)
+
+Distribution of district sizes in New Hampshire
+
 ## Summary
 
 New Hampshire’s public school enrollment tells a story of demographic
@@ -260,3 +359,45 @@ transition:
   growing
 - **Many small districts**: Districts sharing administration through
   SAUs
+
+## Session Info
+
+``` r
+sessionInfo()
+#> R version 4.5.2 (2025-10-31)
+#> Platform: x86_64-pc-linux-gnu
+#> Running under: Ubuntu 24.04.3 LTS
+#> 
+#> Matrix products: default
+#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+#> 
+#> locale:
+#>  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
+#>  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   
+#>  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          
+#> [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   
+#> 
+#> time zone: UTC
+#> tzcode source: system (glibc)
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> other attached packages:
+#> [1] ggplot2_4.0.1      tidyr_1.3.2        dplyr_1.1.4        nhschooldata_0.2.0
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.2     tidyselect_1.2.1  
+#>  [5] jquerylib_0.1.4    systemfonts_1.3.1  scales_1.4.0       textshaping_1.0.4 
+#>  [9] yaml_2.3.12        fastmap_1.2.0      R6_2.6.1           labeling_0.4.3    
+#> [13] generics_0.1.4     curl_7.0.0         knitr_1.51         tibble_3.3.1      
+#> [17] desc_1.4.3         bslib_0.9.0        pillar_1.11.1      RColorBrewer_1.1-3
+#> [21] rlang_1.1.7        cachem_1.1.0       xfun_0.55          S7_0.2.1          
+#> [25] fs_1.6.6           sass_0.4.10        cli_3.6.5          withr_3.0.2       
+#> [29] pkgdown_2.2.0      magrittr_2.0.4     digest_0.6.39      grid_4.5.2        
+#> [33] rappdirs_0.3.3     lifecycle_1.0.5    vctrs_0.7.0        evaluate_1.0.5    
+#> [37] glue_1.8.0         farver_2.1.2       codetools_0.2-20   ragg_1.5.0        
+#> [41] httr_1.4.7         rmarkdown_2.30     purrr_1.2.1        tools_4.5.2       
+#> [45] pkgconfig_2.0.3    htmltools_0.5.9
+```
