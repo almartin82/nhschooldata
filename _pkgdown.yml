@@ -1,5 +1,13 @@
 url: https://almartin82.github.io/nhschooldata/
 
+articles:
+  - title: internal
+    contents:
+      - CLAUDE
+      - TODO
+      - EXPANSION
+    navbar: ~
+
 template:
   bootstrap: 5
   bootswatch: flatly
