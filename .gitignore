@@ -1,8 +1,11 @@
 # R build artifacts
 *.Rproj.user
 *.Rhistory
-*.RData
+.RData
 *.Ruserdata
+
+# Allow vignette cache .RData files (needed for knitr caching)
+!vignettes/*_cache/**/*.RData
 
 # Package build
 *.tar.gz
