@@ -15,7 +15,6 @@ knitr::opts_chunk$set(
   fig.height = 5,
   warning = FALSE,
   message = FALSE,
-  eval = FALSE,
   cache = TRUE
 )
 ```
@@ -266,3 +265,9 @@ New Hampshire's public school enrollment tells a story of demographic transition
 - **Regional divergence**: Coastal areas stable, rural North Country experiencing steeper declines
 - **Diversification**: Hispanic and multiracial student populations growing
 - **Many small districts**: Districts sharing administration through SAUs
+
+## Session Info
+
+```{r session-info}
+sessionInfo()
+```
