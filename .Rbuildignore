@@ -11,5 +11,8 @@
 ^\.pre-commit-config\.yaml$
 ^CLAUDE\.md$
 ^PRD\.md$
+^EXPANSION\.md$
+^TODO\.md$
+^generate_readme_figs\.R$
 ^py.*schooldata$
 ^vignettes/.*_cache$
