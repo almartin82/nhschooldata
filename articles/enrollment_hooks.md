@@ -1,17 +1,15 @@
-# 10 Insights from New Hampshire School Enrollment Data
+# Exploring New Hampshire School Enrollment Data
 
-## Note: Data Access
+## Data Access Note
 
-The NH DOE iPlatform requires browser-based access. To run this vignette
-with real data:
+The NH DOE iPlatform requires browser-based access. If automatic
+download fails:
 
-1.  Visit <https://my.doe.nh.gov/iPlatform>
+1.  Visit [my.doe.nh.gov/iPlatform](https://my.doe.nh.gov/iPlatform)
 2.  Download the enrollment reports
 3.  Use
     [`import_local_enrollment()`](https://almartin82.github.io/nhschooldata/reference/import_local_enrollment.md)
     to load the data
-
-The code examples below show how to analyze the data once loaded.
 
 ``` r
 library(nhschooldata)
@@ -21,11 +19,10 @@ library(ggplot2)
 theme_set(theme_minimal(base_size = 14))
 ```
 
-## New Hampshire Enrollment Trends (2016-2024)
+## 1. Explore statewide enrollment trends
 
-New Hampshire’s public school enrollment reflects the state’s
-demographic challenges - an aging population and declining birth rates
-leading to gradual enrollment decline.
+Track how New Hampshire’s public school enrollment has changed over
+time.
 
 ``` r
 enr <- fetch_enr_multi(2016:2024, use_cache = TRUE)
@@ -54,7 +51,7 @@ ggplot(statewide, aes(x = end_year, y = n_students)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
   labs(
     title = "New Hampshire Public School Enrollment (2016-2024)",
-    subtitle = "Gradual decline reflecting demographic trends",
+    subtitle = "Tracking statewide trends",
     x = "Year",
     y = "Students"
   )
@@ -65,10 +62,9 @@ ggplot(statewide, aes(x = end_year, y = n_students)) +
 
 New Hampshire statewide enrollment 2016-2024
 
-## Top Districts: Manchester Leads, But Suburbs Grow
+## 2. Find the largest districts
 
-Manchester remains the largest district, but suburban communities like
-Bedford are gaining while urban centers shrink.
+See which districts serve the most students in New Hampshire.
 
 ``` r
 enr_2024 <- fetch_enr(2024, use_cache = TRUE)
@@ -94,7 +90,6 @@ top_districts %>%
   scale_x_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
   labs(
     title = "Largest School Districts in New Hampshire (2024)",
-    subtitle = "Manchester and Nashua together serve 13% of state students",
     x = "Students",
     y = NULL
   )
@@ -105,10 +100,10 @@ enrollment](enrollment_hooks_files/figure-html/top-districts-chart-1.png)
 
 Top 10 New Hampshire school districts by enrollment
 
-## Demographics: New Hampshire Is Getting More Diverse
+## 3. Track demographic changes
 
-Hispanic and multiracial students are among the fastest-growing
-demographic groups.
+Monitor how the demographic composition of New Hampshire schools is
+changing.
 
 ``` r
 enr_demo <- fetch_enr_multi(c(2016, 2018, 2020, 2024), use_cache = TRUE)
@@ -148,7 +143,6 @@ demographics %>%
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   labs(
     title = "Demographic Composition of NH Public Schools (2016-2024)",
-    subtitle = "Hispanic and multiracial populations growing",
     x = "Year",
     y = "Percent of Students",
     color = "Group"
@@ -161,10 +155,10 @@ schools](enrollment_hooks_files/figure-html/demographics-chart-1.png)
 
 Demographic shifts in New Hampshire schools
 
-## Regional Divergence: Seacoast Steady, North Country Declining
+## 4. Compare regional trends
 
-Coastal communities are holding relatively steady while the North
-Country has experienced steeper declines.
+New Hampshire’s geography creates distinct regional patterns - compare
+coastal areas to the North Country.
 
 ``` r
 seacoast <- c("Portsmouth", "Dover", "Rochester", "Exeter", "Hampton")
@@ -196,7 +190,6 @@ ggplot(regional, aes(x = end_year, y = total, color = region)) +
   scale_y_continuous(labels = scales::comma) +
   labs(
     title = "Regional Enrollment: Seacoast vs. North Country",
-    subtitle = "North Country experiencing steeper declines than coastal areas",
     x = "Year",
     y = "Students",
     color = "Region"
@@ -209,10 +202,10 @@ Hampshire](enrollment_hooks_files/figure-html/regional-chart-1.png)
 
 Regional enrollment trends in New Hampshire
 
-## Grade-Level Trends: The Pipeline Is Narrowing
+## 5. Analyze grade-level trends
 
-Kindergarten enrollment trends signal potential future decline, as fewer
-students enter the system each year.
+Track how enrollment varies across grade levels to understand the
+student pipeline.
 
 ``` r
 enr_grades <- fetch_enr_multi(2016:2024, use_cache = TRUE)
@@ -290,7 +283,6 @@ grades %>%
   scale_y_continuous(labels = scales::comma) +
   labs(
     title = "New Hampshire Enrollment by Grade Level (2016-2024)",
-    subtitle = "Tracking enrollment pipeline across grade levels",
     x = "Year",
     y = "Students",
     color = "Grade"
@@ -303,10 +295,10 @@ time](enrollment_hooks_files/figure-html/grade-level-chart-1.png)
 
 Enrollment by grade level over time
 
-## District Size Distribution: Many Tiny Districts
+## 6. Understand district size distribution
 
-New Hampshire has 45 districts with fewer than 300 students. Many of
-these share administration through SAUs (School Administrative Units).
+New Hampshire has many small districts that share administration through
+SAUs.
 
 ``` r
 district_sizes <- enr_2024 %>%
@@ -335,7 +327,6 @@ ggplot(district_sizes, aes(x = size, y = n, fill = size)) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
   labs(
     title = "New Hampshire Districts by Size (2024)",
-    subtitle = "45 tiny districts with fewer than 300 students",
     x = "District Size",
     y = "Number of Districts"
   ) +
@@ -347,18 +338,261 @@ Hampshire](enrollment_hooks_files/figure-html/district-size-chart-1.png)
 
 Distribution of district sizes in New Hampshire
 
+## 7. Compare Manchester and Nashua
+
+Track the state’s two largest cities and their share of total
+enrollment.
+
+``` r
+big_cities <- enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         grepl("Manchester|Nashua", district_name)) %>%
+  group_by(end_year) %>%
+  summarize(combined = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+state_totals <- enr %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  select(end_year, state_total = n_students)
+
+big_cities %>%
+  left_join(state_totals, by = "end_year") %>%
+  mutate(pct_of_state = round(combined / state_total * 100, 1))
+#> # A tibble: 0 × 4
+#> # ℹ 4 variables: end_year <int>, combined <int>, state_total <int>,
+#> #   pct_of_state <dbl>
+```
+
+## 8. Track kindergarten pipeline
+
+Monitor kindergarten enrollment to predict future enrollment trends.
+
+``` r
+kindergarten <- enr %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "K") %>%
+  select(end_year, k_students = n_students)
+
+# Calculate year-over-year change
+kindergarten %>%
+  mutate(
+    change = k_students - lag(k_students),
+    pct_change = round(change / lag(k_students) * 100, 1)
+  )
+#>   end_year k_students change pct_change
+#> 1     2016          0     NA         NA
+#> 2     2017          0      0        NaN
+#> 3     2018          0      0        NaN
+#> 4     2019          0      0        NaN
+#> 5     2020          0      0        NaN
+#> 6     2021          0      0        NaN
+#> 7     2022          0      0        NaN
+#> 8     2023          0      0        NaN
+#> 9     2024          0      0        NaN
+```
+
+## 9. Find the smallest districts
+
+Identify New Hampshire’s tiny districts that rely on SAU administrative
+sharing.
+
+``` r
+tiny_districts <- enr_2024 %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         n_students < 200) %>%
+  arrange(n_students) %>%
+  head(10) %>%
+  select(district_name, n_students)
+
+tiny_districts
+#> [1] district_name n_students   
+#> <0 rows> (or 0-length row.names)
+```
+
+## 10. Track high school enrollment
+
+Follow high school grades (9-12) to understand graduation pipeline.
+
+``` r
+high_school <- enr %>%
+  filter(is_state, subgroup == "total_enrollment",
+         grade_level %in% c("09", "10", "11", "12")) %>%
+  group_by(end_year) %>%
+  summarize(hs_total = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+high_school
+#> # A tibble: 9 × 2
+#>   end_year hs_total
+#>      <int>    <int>
+#> 1     2016        0
+#> 2     2017        0
+#> 3     2018        0
+#> 4     2019        0
+#> 5     2020        0
+#> 6     2021        0
+#> 7     2022        0
+#> 8     2023        0
+#> 9     2024        0
+```
+
+## 11. Compare elementary vs secondary
+
+Track the balance between elementary (K-5) and secondary (6-12)
+enrollment.
+
+``` r
+elem_grades <- c("K", "01", "02", "03", "04", "05")
+sec_grades <- c("06", "07", "08", "09", "10", "11", "12")
+
+level_comparison <- enr %>%
+  filter(is_state, subgroup == "total_enrollment") %>%
+  mutate(level = case_when(
+    grade_level %in% elem_grades ~ "Elementary",
+    grade_level %in% sec_grades ~ "Secondary",
+    TRUE ~ NA_character_
+  )) %>%
+  filter(!is.na(level)) %>%
+  group_by(end_year, level) %>%
+  summarize(students = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+level_comparison
+#> # A tibble: 18 × 3
+#>    end_year level      students
+#>       <int> <chr>         <int>
+#>  1     2016 Elementary        0
+#>  2     2016 Secondary         0
+#>  3     2017 Elementary        0
+#>  4     2017 Secondary         0
+#>  5     2018 Elementary        0
+#>  6     2018 Secondary         0
+#>  7     2019 Elementary        0
+#>  8     2019 Secondary         0
+#>  9     2020 Elementary        0
+#> 10     2020 Secondary         0
+#> 11     2021 Elementary        0
+#> 12     2021 Secondary         0
+#> 13     2022 Elementary        0
+#> 14     2022 Secondary         0
+#> 15     2023 Elementary        0
+#> 16     2023 Secondary         0
+#> 17     2024 Elementary        0
+#> 18     2024 Secondary         0
+```
+
+## 12. Identify growing districts
+
+Find districts that have grown over the analysis period.
+
+``` r
+growth <- enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         end_year %in% c(2016, 2024)) %>%
+  select(district_name, end_year, n_students) %>%
+  pivot_wider(names_from = end_year, values_from = n_students,
+                     names_prefix = "y")
+
+# Calculate growth if data exists
+if (nrow(growth) > 0 && "y2024" %in% names(growth) && "y2016" %in% names(growth)) {
+  growth <- growth %>%
+    mutate(
+      change = y2024 - y2016,
+      pct_change = round(change / y2016 * 100, 1)
+    ) %>%
+    arrange(desc(pct_change)) %>%
+    head(10)
+}
+
+growth
+#> # A tibble: 0 × 1
+#> # ℹ 1 variable: district_name <chr>
+```
+
+## 13. Track middle grades
+
+Monitor grades 6-8 enrollment trends.
+
+``` r
+middle_grades <- enr %>%
+  filter(is_state, subgroup == "total_enrollment",
+         grade_level %in% c("06", "07", "08")) %>%
+  group_by(end_year) %>%
+  summarize(middle_total = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+middle_grades
+#> # A tibble: 9 × 2
+#>   end_year middle_total
+#>      <int>        <int>
+#> 1     2016            0
+#> 2     2017            0
+#> 3     2018            0
+#> 4     2019            0
+#> 5     2020            0
+#> 6     2021            0
+#> 7     2022            0
+#> 8     2023            0
+#> 9     2024            0
+```
+
+## 14. Compare school vs district counts
+
+See how many schools operate within each district size category.
+
+``` r
+school_counts <- enr_2024 %>%
+  filter(is_campus, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  group_by(district_name) %>%
+  summarize(n_schools = n(), .groups = "drop")
+
+district_enrollment <- enr_2024 %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  select(district_name, district_enrollment = n_students)
+
+school_counts %>%
+  left_join(district_enrollment, by = "district_name") %>%
+  mutate(avg_school_size = round(district_enrollment / n_schools, 0)) %>%
+  arrange(desc(n_schools)) %>%
+  head(10)
+#> # A tibble: 0 × 4
+#> # ℹ 4 variables: district_name <chr>, n_schools <int>,
+#> #   district_enrollment <int>, avg_school_size <dbl>
+```
+
+## 15. Calculate year-over-year state change
+
+Track annual enrollment changes at the state level.
+
+``` r
+state_changes <- enr %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  arrange(end_year) %>%
+  mutate(
+    change = n_students - lag(n_students),
+    pct_change = round(change / lag(n_students) * 100, 2)
+  ) %>%
+  select(end_year, n_students, change, pct_change)
+
+state_changes
+#>   end_year n_students change pct_change
+#> 1     2016          0     NA         NA
+#> 2     2017          0      0        NaN
+#> 3     2018          0      0        NaN
+#> 4     2019          0      0        NaN
+#> 5     2020          0      0        NaN
+#> 6     2021          0      0        NaN
+#> 7     2022          0      0        NaN
+#> 8     2023          0      0        NaN
+#> 9     2024          0      0        NaN
+```
+
 ## Summary
 
-New Hampshire’s public school enrollment tells a story of demographic
-transition:
+New Hampshire’s public school enrollment data reveals:
 
-- **Declining enrollment**: Gradual decline reflecting aging population
-- **Regional divergence**: Coastal areas stable, rural North Country
-  experiencing steeper declines
-- **Diversification**: Hispanic and multiracial student populations
-  growing
-- **Many small districts**: Districts sharing administration through
-  SAUs
+- **Statewide trends**: Track enrollment changes across years
+- **District comparisons**: Compare districts by size and location
+- **Demographics**: Monitor changing student populations
+- **Regional patterns**: Understand Seacoast vs. North Country
+  differences
+- **Grade-level analysis**: Follow the student pipeline
+- **Growth analysis**: Identify growing and declining districts
 
 ## Session Info
 
@@ -393,11 +627,11 @@ sessionInfo()
 #>  [9] yaml_2.3.12        fastmap_1.2.0      R6_2.6.1           labeling_0.4.3    
 #> [13] generics_0.1.4     curl_7.0.0         knitr_1.51         tibble_3.3.1      
 #> [17] desc_1.4.3         bslib_0.9.0        pillar_1.11.1      RColorBrewer_1.1-3
-#> [21] rlang_1.1.7        cachem_1.1.0       xfun_0.55          S7_0.2.1          
-#> [25] fs_1.6.6           sass_0.4.10        cli_3.6.5          withr_3.0.2       
-#> [29] pkgdown_2.2.0      magrittr_2.0.4     digest_0.6.39      grid_4.5.2        
-#> [33] rappdirs_0.3.3     lifecycle_1.0.5    vctrs_0.7.0        evaluate_1.0.5    
-#> [37] glue_1.8.0         farver_2.1.2       codetools_0.2-20   ragg_1.5.0        
-#> [41] httr_1.4.7         rmarkdown_2.30     purrr_1.2.1        tools_4.5.2       
-#> [45] pkgconfig_2.0.3    htmltools_0.5.9
+#> [21] rlang_1.1.7        utf8_1.2.6         cachem_1.1.0       xfun_0.55         
+#> [25] S7_0.2.1           fs_1.6.6           sass_0.4.10        cli_3.6.5         
+#> [29] withr_3.0.2        pkgdown_2.2.0      magrittr_2.0.4     digest_0.6.39     
+#> [33] grid_4.5.2         rappdirs_0.3.4     lifecycle_1.0.5    vctrs_0.7.0       
+#> [37] evaluate_1.0.5     glue_1.8.0         farver_2.1.2       codetools_0.2-20  
+#> [41] ragg_1.5.0         httr_1.4.7         rmarkdown_2.30     purrr_1.2.1       
+#> [45] tools_4.5.2        pkgconfig_2.0.3    htmltools_0.5.9
 ```
