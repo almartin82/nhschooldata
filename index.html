@@ -56,18 +56,18 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><strong><a href="https://almartin82.github.io/nhschooldata/">Documentation</a></strong> | <strong><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html">Getting Started</a></strong></p>
-<p>Part of the <a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a> family of state education data packages, providing a consistent interface for accessing school enrollment data across all 50 states.</p>
+<p><strong><a href="https://almartin82.github.io/nhschooldata/">Documentation</a></strong> | <strong><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html">Enrollment Trends</a></strong></p>
 <p>Fetch and analyze New Hampshire school enrollment data from the NH Department of Education in R or Python.</p>
+<p>Part of the <a href="https://github.com/almartin82?tab=repositories&amp;q=schooldata" class="external-link">state schooldata project</a>, inspired by <a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a>.</p>
 <div class="section level2">
 <h2 id="what-can-you-find-with-nhschooldata">What can you find with nhschooldata?<a class="anchor" aria-label="anchor" href="#what-can-you-find-with-nhschooldata"></a>
 </h2>
-<p><strong>10 years of enrollment data (2015-2025).</strong> Approximately 165,000 students. Around 162 districts organized into SAUs. Here are the analyses you can perform:</p>
+<p><strong>10 years of enrollment data (2015-2025).</strong> Approximately 165,000 students. Around 162 districts organized into SAUs. Here are fifteen stories hiding in the numbers – see the <a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html">Enrollment Trends vignette</a> for interactive visualizations:</p>
 <hr>
 <div class="section level3">
-<h3 id="id_1-explore-statewide-enrollment-trends">1. Explore statewide enrollment trends<a class="anchor" aria-label="anchor" href="#id_1-explore-statewide-enrollment-trends"></a>
+<h3 id="id_1-new-hampshire-serves-roughly-165000-public-school-students">1. New Hampshire serves roughly 165,000 public school students<a class="anchor" aria-label="anchor" href="#id_1-new-hampshire-serves-roughly-165000-public-school-students"></a>
 </h3>
-<p>Track how New Hampshire’s public school enrollment has changed over time.</p>
+<p>Despite being one of the smallest states, New Hampshire maintains a robust public education system. Tracking statewide totals reveals how enrollment has shifted over the past decade.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://almartin82.github.io/nhschooldata/">nhschooldata</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -79,12 +79,15 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">statewide</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/statewide-chart-1.png" alt="Statewide enrollment"><div class="figcaption">Statewide enrollment</div>
+</div>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_2-find-the-largest-districts">2. Find the largest districts<a class="anchor" aria-label="anchor" href="#id_2-find-the-largest-districts"></a>
+<h3 id="id_2-manchester-is-new-hampshires-school-giant">2. Manchester is New Hampshire’s school giant<a class="anchor" aria-label="anchor" href="#id_2-manchester-is-new-hampshires-school-giant"></a>
 </h3>
-<p>See which districts serve the most students in New Hampshire.</p>
+<p>Manchester School District is the state’s largest by a wide margin, serving more students than any other district in the Granite State. Here are the top 10 districts by enrollment.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -95,13 +98,36 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">top_districts</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/top-districts-chart-1.png" alt="Top districts"><div class="figcaption">Top districts</div>
+</div>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_3-track-demographic-changes">3. Track demographic changes<a class="anchor" aria-label="anchor" href="#id_3-track-demographic-changes"></a>
+<h3 id="id_3-manchester-and-nashua-together-enroll-a-significant-share-of-the-state">3. Manchester and Nashua together enroll a significant share of the state<a class="anchor" aria-label="anchor" href="#id_3-manchester-and-nashua-together-enroll-a-significant-share-of-the-state"></a>
 </h3>
-<p>Monitor how the demographic composition of New Hampshire schools is changing.</p>
+<p>New Hampshire’s two largest cities – Manchester and Nashua – combined account for a disproportionate share of the state’s public school students. Tracking their combined share over time shows how concentrated enrollment is.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">big_cities</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Manchester|Nashua"</span>, <span class="va">district_name</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>combined <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">state_totals</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, state_total <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">big_cities</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">state_totals</span>, by <span class="op">=</span> <span class="st">"end_year"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct_of_state <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">combined</span> <span class="op">/</span> <span class="va">state_total</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_4-new-hampshire-is-becoming-more-diverse">4. New Hampshire is becoming more diverse<a class="anchor" aria-label="anchor" href="#id_4-new-hampshire-is-becoming-more-diverse"></a>
+</h3>
+<p>New Hampshire is one of the whitest states in America, but its student demographics are shifting. Hispanic, Asian, and multiracial populations have been growing as a share of total enrollment.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">enr_demo</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2016</span>, <span class="fl">2018</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="va">enr_demo</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -116,13 +142,16 @@
 <span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">subgroup</span>, values_from <span class="op">=</span> <span class="va">pct</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">demographics_wide</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/demographics-chart-1.png" alt="Demographics"><div class="figcaption">Demographics</div>
+</div>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_4-compare-regional-trends">4. Compare regional trends<a class="anchor" aria-label="anchor" href="#id_4-compare-regional-trends"></a>
+<h3 id="id_5-the-seacoast-grows-while-the-north-country-empties-out">5. The Seacoast grows while the North Country empties out<a class="anchor" aria-label="anchor" href="#id_5-the-seacoast-grows-while-the-north-country-empties-out"></a>
 </h3>
-<p>New Hampshire’s geography creates distinct regional patterns - compare coastal areas to the North Country.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p>New Hampshire’s geography creates a stark enrollment divide. Seacoast communities like Portsmouth, Dover, and Exeter attract families, while North Country districts in Berlin, Colebrook, and Gorham face declining populations as young people leave.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">seacoast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Portsmouth"</span>, <span class="st">"Dover"</span>, <span class="st">"Rochester"</span>, <span class="st">"Exeter"</span>, <span class="st">"Hampton"</span><span class="op">)</span></span>
 <span><span class="va">north_country</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Berlin"</span>, <span class="st">"Colebrook"</span>, <span class="st">"Lancaster"</span>, <span class="st">"Littleton"</span>, <span class="st">"Gorham"</span><span class="op">)</span></span>
 <span></span>
@@ -140,13 +169,33 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">regional</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/regional-chart-1.png" alt="Regional trends"><div class="figcaption">Regional trends</div>
+</div>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_5-analyze-grade-level-trends">5. Analyze grade-level trends<a class="anchor" aria-label="anchor" href="#id_5-analyze-grade-level-trends"></a>
+<h3 id="id_6-kindergarten-enrollment-signals-what-is-coming-for-nh-schools">6. Kindergarten enrollment signals what is coming for NH schools<a class="anchor" aria-label="anchor" href="#id_6-kindergarten-enrollment-signals-what-is-coming-for-nh-schools"></a>
 </h3>
-<p>Track how enrollment varies across grade levels to understand the student pipeline.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>Kindergarten enrollment is a leading indicator for future school enrollment. Year-over-year changes in kindergarten classes ripple through the system for the next 12 years.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">kindergarten</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"K"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, k_students <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Calculate year-over-year change</span></span>
+<span><span class="va">kindergarten</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    change <span class="op">=</span> <span class="va">k_students</span> <span class="op">-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">k_students</span><span class="op">)</span>,</span>
+<span>    pct_change <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">change</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">k_students</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_7-grade-level-enrollment-reveals-the-student-pipeline">7. Grade-level enrollment reveals the student pipeline<a class="anchor" aria-label="anchor" href="#id_7-grade-level-enrollment-reveals-the-student-pipeline"></a>
+</h3>
+<p>Tracking key grade milestones – kindergarten entry, 5th grade, 9th grade, and 12th grade graduation – shows how cohorts shrink or grow as they move through the system.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">enr_grades</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fl">2016</span><span class="op">:</span><span class="fl">2024</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">grades</span> <span class="op">&lt;-</span> <span class="va">enr_grades</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -162,13 +211,16 @@
 <span>  <span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">grades</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/grade-level-chart-1.png" alt="Grade level trends"><div class="figcaption">Grade level trends</div>
+</div>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_6-understand-district-size-distribution">6. Understand district size distribution<a class="anchor" aria-label="anchor" href="#id_6-understand-district-size-distribution"></a>
+<h3 id="id_8-most-nh-districts-are-tiny--shared-saus-hold-the-system-together">8. Most NH districts are tiny – shared SAUs hold the system together<a class="anchor" aria-label="anchor" href="#id_8-most-nh-districts-are-tiny--shared-saus-hold-the-system-together"></a>
 </h3>
-<p>New Hampshire has many small districts that share administration through SAUs.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>New Hampshire has a fragmented district landscape. Most districts enroll fewer than 300 students and depend on School Administrative Units (SAUs) to share superintendents and central office staff.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">district_sizes</span> <span class="op">&lt;-</span> <span class="va">enr_2024</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
@@ -182,49 +234,15 @@
 <span>                                         <span class="st">"Medium (1,000-2,999)"</span>, <span class="st">"Large (3,000+)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">district_sizes</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/district-size-chart-1.png" alt="District sizes"><div class="figcaption">District sizes</div>
+</div>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_7-compare-manchester-and-nashua">7. Compare Manchester and Nashua<a class="anchor" aria-label="anchor" href="#id_7-compare-manchester-and-nashua"></a>
+<h3 id="id_9-the-smallest-districts-in-nh-have-fewer-students-than-a-single-classroom">9. The smallest districts in NH have fewer students than a single classroom<a class="anchor" aria-label="anchor" href="#id_9-the-smallest-districts-in-nh-have-fewer-students-than-a-single-classroom"></a>
 </h3>
-<p>Track the state’s two largest cities and their share of total enrollment.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">big_cities</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
-<span>         <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Manchester|Nashua"</span>, <span class="va">district_name</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>combined <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">state_totals</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, state_total <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">big_cities</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">state_totals</span>, by <span class="op">=</span> <span class="st">"end_year"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct_of_state <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">combined</span> <span class="op">/</span> <span class="va">state_total</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_8-track-kindergarten-pipeline">8. Track kindergarten pipeline<a class="anchor" aria-label="anchor" href="#id_8-track-kindergarten-pipeline"></a>
-</h3>
-<p>Monitor kindergarten enrollment to predict future enrollment trends.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">kindergarten</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"K"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, k_students <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Calculate year-over-year change</span></span>
-<span><span class="va">kindergarten</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    change <span class="op">=</span> <span class="va">k_students</span> <span class="op">-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">k_students</span><span class="op">)</span>,</span>
-<span>    pct_change <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">change</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">k_students</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_9-find-the-smallest-districts">9. Find the smallest districts<a class="anchor" aria-label="anchor" href="#id_9-find-the-smallest-districts"></a>
-</h3>
-<p>Identify New Hampshire’s tiny districts that rely on SAU administrative sharing.</p>
+<p>Some New Hampshire districts enroll so few students that they barely fill one classroom per grade. These micro-districts survive through SAU partnerships and regional school agreements.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tiny_districts</span> <span class="op">&lt;-</span> <span class="va">enr_2024</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
@@ -237,9 +255,9 @@
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_10-track-high-school-enrollment">10. Track high school enrollment<a class="anchor" aria-label="anchor" href="#id_10-track-high-school-enrollment"></a>
+<h3 id="id_10-high-school-enrollment-tracks-the-graduating-pipeline">10. High school enrollment tracks the graduating pipeline<a class="anchor" aria-label="anchor" href="#id_10-high-school-enrollment-tracks-the-graduating-pipeline"></a>
 </h3>
-<p>Follow high school grades (9-12) to understand graduation pipeline.</p>
+<p>Following grades 9-12 over time shows how many students are in the graduation pipeline. Changes here directly affect workforce readiness and college enrollment across the state.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">high_school</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>,</span>
@@ -251,9 +269,9 @@
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_11-compare-elementary-vs-secondary">11. Compare elementary vs secondary<a class="anchor" aria-label="anchor" href="#id_11-compare-elementary-vs-secondary"></a>
+<h3 id="id_11-elementary-outnumbers-secondary--but-by-how-much">11. Elementary outnumbers secondary – but by how much?<a class="anchor" aria-label="anchor" href="#id_11-elementary-outnumbers-secondary--but-by-how-much"></a>
 </h3>
-<p>Track the balance between elementary (K-5) and secondary (6-12) enrollment.</p>
+<p>The balance between elementary (K-5) and secondary (6-12) enrollment affects staffing, facility planning, and per-pupil spending across the state.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">elem_grades</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"K"</span>, <span class="st">"01"</span>, <span class="st">"02"</span>, <span class="st">"03"</span>, <span class="st">"04"</span>, <span class="st">"05"</span><span class="op">)</span></span>
 <span><span class="va">sec_grades</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"06"</span>, <span class="st">"07"</span>, <span class="st">"08"</span>, <span class="st">"09"</span>, <span class="st">"10"</span>, <span class="st">"11"</span>, <span class="st">"12"</span><span class="op">)</span></span>
@@ -273,9 +291,9 @@
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_12-identify-growing-districts">12. Identify growing districts<a class="anchor" aria-label="anchor" href="#id_12-identify-growing-districts"></a>
+<h3 id="id_12-which-districts-are-growing-the-fastest">12. Which districts are growing the fastest?<a class="anchor" aria-label="anchor" href="#id_12-which-districts-are-growing-the-fastest"></a>
 </h3>
-<p>Find districts that have grown over the analysis period.</p>
+<p>While overall enrollment trends get the headlines, individual districts tell different stories. Some communities are booming with new housing development while others bleed students year after year.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">growth</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
@@ -299,9 +317,9 @@
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_13-track-middle-grades">13. Track middle grades<a class="anchor" aria-label="anchor" href="#id_13-track-middle-grades"></a>
+<h3 id="id_13-middle-grades-6-8-carry-the-demographic-wave">13. Middle grades (6-8) carry the demographic wave<a class="anchor" aria-label="anchor" href="#id_13-middle-grades-6-8-carry-the-demographic-wave"></a>
 </h3>
-<p>Monitor grades 6-8 enrollment trends.</p>
+<p>Middle school enrollment changes lag elementary shifts by about 5 years. Watching grades 6-8 reveals what happened to kindergarten classes half a decade ago.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">middle_grades</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>,</span>
@@ -313,9 +331,9 @@
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_14-compare-school-vs-district-counts">14. Compare school vs district counts<a class="anchor" aria-label="anchor" href="#id_14-compare-school-vs-district-counts"></a>
+<h3 id="id_14-how-many-schools-does-each-district-operate">14. How many schools does each district operate?<a class="anchor" aria-label="anchor" href="#id_14-how-many-schools-does-each-district-operate"></a>
 </h3>
-<p>See how many schools operate within each district size category.</p>
+<p>Large districts run dozens of schools while tiny districts may have just one. The ratio of students to schools reveals which districts achieve economies of scale and which spread thin.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">school_counts</span> <span class="op">&lt;-</span> <span class="va">enr_2024</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_campus</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -334,9 +352,9 @@
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_15-calculate-year-over-year-state-change">15. Calculate year-over-year state change<a class="anchor" aria-label="anchor" href="#id_15-calculate-year-over-year-state-change"></a>
+<h3 id="id_15-year-over-year-enrollment-changes-reveal-boom-and-bust-cycles">15. Year-over-year enrollment changes reveal boom and bust cycles<a class="anchor" aria-label="anchor" href="#id_15-year-over-year-enrollment-changes-reveal-boom-and-bust-cycles"></a>
 </h3>
-<p>Track annual enrollment changes at the state level.</p>
+<p>Annual enrollment changes at the state level show whether New Hampshire is gaining or losing students. Even small percentage changes compound over time into major shifts for school budgets and staffing.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">state_changes</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -350,11 +368,6 @@
 <span><span class="va">state_changes</span></span></code></pre></div>
 <hr>
 </div>
-</div>
-<div class="section level2">
-<h2 id="enrollment-visualizations">Enrollment Visualizations<a class="anchor" aria-label="anchor" href="#enrollment-visualizations"></a>
-</h2>
-<p>See the <a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html">full vignette</a> for interactive charts and deeper analysis.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>

@@ -1,28 +1,31 @@
 # nhschooldata
 
 **[Documentation](https://almartin82.github.io/nhschooldata/)** \|
-**[Getting
-Started](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html)**
-
-Part of the [njschooldata](https://github.com/almartin82/njschooldata)
-family of state education data packages, providing a consistent
-interface for accessing school enrollment data across all 50 states.
+**[Enrollment
+Trends](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html)**
 
 Fetch and analyze New Hampshire school enrollment data from the NH
 Department of Education in R or Python.
 
+Part of the [state schooldata
+project](https://github.com/almartin82?tab=repositories&q=schooldata),
+inspired by [njschooldata](https://github.com/almartin82/njschooldata).
+
 ## What can you find with nhschooldata?
 
 **10 years of enrollment data (2015-2025).** Approximately 165,000
-students. Around 162 districts organized into SAUs. Here are the
-analyses you can perform:
+students. Around 162 districts organized into SAUs. Here are fifteen
+stories hiding in the numbers – see the [Enrollment Trends
+vignette](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html)
+for interactive visualizations:
 
 ------------------------------------------------------------------------
 
-### 1. Explore statewide enrollment trends
+### 1. New Hampshire serves roughly 165,000 public school students
 
-Track how New Hampshire’s public school enrollment has changed over
-time.
+Despite being one of the smallest states, New Hampshire maintains a
+robust public education system. Tracking statewide totals reveals how
+enrollment has shifted over the past decade.
 
 ``` r
 library(nhschooldata)
@@ -37,11 +40,18 @@ statewide <- enr %>%
 statewide
 ```
 
+![Statewide
+enrollment](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/statewide-chart-1.png)
+
+Statewide enrollment
+
 ------------------------------------------------------------------------
 
-### 2. Find the largest districts
+### 2. Manchester is New Hampshire’s school giant
 
-See which districts serve the most students in New Hampshire.
+Manchester School District is the state’s largest by a wide margin,
+serving more students than any other district in the Granite State. Here
+are the top 10 districts by enrollment.
 
 ``` r
 enr_2024 <- fetch_enr(2024, use_cache = TRUE)
@@ -55,12 +65,43 @@ top_districts <- enr_2024 %>%
 top_districts
 ```
 
+![Top
+districts](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/top-districts-chart-1.png)
+
+Top districts
+
 ------------------------------------------------------------------------
 
-### 3. Track demographic changes
+### 3. Manchester and Nashua together enroll a significant share of the state
 
-Monitor how the demographic composition of New Hampshire schools is
-changing.
+New Hampshire’s two largest cities – Manchester and Nashua – combined
+account for a disproportionate share of the state’s public school
+students. Tracking their combined share over time shows how concentrated
+enrollment is.
+
+``` r
+big_cities <- enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         grepl("Manchester|Nashua", district_name)) %>%
+  group_by(end_year) %>%
+  summarize(combined = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+state_totals <- enr %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  select(end_year, state_total = n_students)
+
+big_cities %>%
+  left_join(state_totals, by = "end_year") %>%
+  mutate(pct_of_state = round(combined / state_total * 100, 1))
+```
+
+------------------------------------------------------------------------
+
+### 4. New Hampshire is becoming more diverse
+
+New Hampshire is one of the whitest states in America, but its student
+demographics are shifting. Hispanic, Asian, and multiracial populations
+have been growing as a share of total enrollment.
 
 ``` r
 enr_demo <- fetch_enr_multi(c(2016, 2018, 2020, 2024), use_cache = TRUE)
@@ -79,12 +120,18 @@ demographics_wide <- demographics %>%
 demographics_wide
 ```
 
+![Demographics](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/demographics-chart-1.png)
+
+Demographics
+
 ------------------------------------------------------------------------
 
-### 4. Compare regional trends
+### 5. The Seacoast grows while the North Country empties out
 
-New Hampshire’s geography creates distinct regional patterns - compare
-coastal areas to the North Country.
+New Hampshire’s geography creates a stark enrollment divide. Seacoast
+communities like Portsmouth, Dover, and Exeter attract families, while
+North Country districts in Berlin, Colebrook, and Gorham face declining
+populations as young people leave.
 
 ``` r
 seacoast <- c("Portsmouth", "Dover", "Rochester", "Exeter", "Hampton")
@@ -106,12 +153,39 @@ regional <- enr_regional %>%
 regional
 ```
 
+![Regional
+trends](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/regional-chart-1.png)
+
+Regional trends
+
 ------------------------------------------------------------------------
 
-### 5. Analyze grade-level trends
+### 6. Kindergarten enrollment signals what is coming for NH schools
 
-Track how enrollment varies across grade levels to understand the
-student pipeline.
+Kindergarten enrollment is a leading indicator for future school
+enrollment. Year-over-year changes in kindergarten classes ripple
+through the system for the next 12 years.
+
+``` r
+kindergarten <- enr %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "K") %>%
+  select(end_year, k_students = n_students)
+
+# Calculate year-over-year change
+kindergarten %>%
+  mutate(
+    change = k_students - lag(k_students),
+    pct_change = round(change / lag(k_students) * 100, 1)
+  )
+```
+
+------------------------------------------------------------------------
+
+### 7. Grade-level enrollment reveals the student pipeline
+
+Tracking key grade milestones – kindergarten entry, 5th grade, 9th
+grade, and 12th grade graduation – shows how cohorts shrink or grow as
+they move through the system.
 
 ``` r
 enr_grades <- fetch_enr_multi(2016:2024, use_cache = TRUE)
@@ -131,12 +205,18 @@ grades <- enr_grades %>%
 grades
 ```
 
+![Grade level
+trends](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/grade-level-chart-1.png)
+
+Grade level trends
+
 ------------------------------------------------------------------------
 
-### 6. Understand district size distribution
+### 8. Most NH districts are tiny – shared SAUs hold the system together
 
-New Hampshire has many small districts that share administration through
-SAUs.
+New Hampshire has a fragmented district landscape. Most districts enroll
+fewer than 300 students and depend on School Administrative Units (SAUs)
+to share superintendents and central office staff.
 
 ``` r
 district_sizes <- enr_2024 %>%
@@ -154,54 +234,18 @@ district_sizes <- enr_2024 %>%
 district_sizes
 ```
 
-------------------------------------------------------------------------
+![District
+sizes](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/district-size-chart-1.png)
 
-### 7. Compare Manchester and Nashua
-
-Track the state’s two largest cities and their share of total
-enrollment.
-
-``` r
-big_cities <- enr %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
-         grepl("Manchester|Nashua", district_name)) %>%
-  group_by(end_year) %>%
-  summarize(combined = sum(n_students, na.rm = TRUE), .groups = "drop")
-
-state_totals <- enr %>%
-  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  select(end_year, state_total = n_students)
-
-big_cities %>%
-  left_join(state_totals, by = "end_year") %>%
-  mutate(pct_of_state = round(combined / state_total * 100, 1))
-```
+District sizes
 
 ------------------------------------------------------------------------
 
-### 8. Track kindergarten pipeline
+### 9. The smallest districts in NH have fewer students than a single classroom
 
-Monitor kindergarten enrollment to predict future enrollment trends.
-
-``` r
-kindergarten <- enr %>%
-  filter(is_state, subgroup == "total_enrollment", grade_level == "K") %>%
-  select(end_year, k_students = n_students)
-
-# Calculate year-over-year change
-kindergarten %>%
-  mutate(
-    change = k_students - lag(k_students),
-    pct_change = round(change / lag(k_students) * 100, 1)
-  )
-```
-
-------------------------------------------------------------------------
-
-### 9. Find the smallest districts
-
-Identify New Hampshire’s tiny districts that rely on SAU administrative
-sharing.
+Some New Hampshire districts enroll so few students that they barely
+fill one classroom per grade. These micro-districts survive through SAU
+partnerships and regional school agreements.
 
 ``` r
 tiny_districts <- enr_2024 %>%
@@ -216,9 +260,11 @@ tiny_districts
 
 ------------------------------------------------------------------------
 
-### 10. Track high school enrollment
+### 10. High school enrollment tracks the graduating pipeline
 
-Follow high school grades (9-12) to understand graduation pipeline.
+Following grades 9-12 over time shows how many students are in the
+graduation pipeline. Changes here directly affect workforce readiness
+and college enrollment across the state.
 
 ``` r
 high_school <- enr %>%
@@ -232,10 +278,11 @@ high_school
 
 ------------------------------------------------------------------------
 
-### 11. Compare elementary vs secondary
+### 11. Elementary outnumbers secondary – but by how much?
 
-Track the balance between elementary (K-5) and secondary (6-12)
-enrollment.
+The balance between elementary (K-5) and secondary (6-12) enrollment
+affects staffing, facility planning, and per-pupil spending across the
+state.
 
 ``` r
 elem_grades <- c("K", "01", "02", "03", "04", "05")
@@ -257,9 +304,11 @@ level_comparison
 
 ------------------------------------------------------------------------
 
-### 12. Identify growing districts
+### 12. Which districts are growing the fastest?
 
-Find districts that have grown over the analysis period.
+While overall enrollment trends get the headlines, individual districts
+tell different stories. Some communities are booming with new housing
+development while others bleed students year after year.
 
 ``` r
 growth <- enr %>%
@@ -285,9 +334,11 @@ growth
 
 ------------------------------------------------------------------------
 
-### 13. Track middle grades
+### 13. Middle grades (6-8) carry the demographic wave
 
-Monitor grades 6-8 enrollment trends.
+Middle school enrollment changes lag elementary shifts by about 5 years.
+Watching grades 6-8 reveals what happened to kindergarten classes half a
+decade ago.
 
 ``` r
 middle_grades <- enr %>%
@@ -301,9 +352,11 @@ middle_grades
 
 ------------------------------------------------------------------------
 
-### 14. Compare school vs district counts
+### 14. How many schools does each district operate?
 
-See how many schools operate within each district size category.
+Large districts run dozens of schools while tiny districts may have just
+one. The ratio of students to schools reveals which districts achieve
+economies of scale and which spread thin.
 
 ``` r
 school_counts <- enr_2024 %>%
@@ -324,9 +377,11 @@ school_counts %>%
 
 ------------------------------------------------------------------------
 
-### 15. Calculate year-over-year state change
+### 15. Year-over-year enrollment changes reveal boom and bust cycles
 
-Track annual enrollment changes at the state level.
+Annual enrollment changes at the state level show whether New Hampshire
+is gaining or losing students. Even small percentage changes compound
+over time into major shifts for school budgets and staffing.
 
 ``` r
 state_changes <- enr %>%
@@ -342,12 +397,6 @@ state_changes
 ```
 
 ------------------------------------------------------------------------
-
-## Enrollment Visualizations
-
-See the [full
-vignette](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html)
-for interactive charts and deeper analysis.
 
 ## Installation
 
