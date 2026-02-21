@@ -294,3 +294,38 @@ auto-update on merge:
 **Why:** Vignette figures regenerate automatically when pkgdown builds.
 Manual `man/figures/` requires running a separate script and is easy to
 forget, causing stale/broken images.
+
+------------------------------------------------------------------------
+
+## Valid Filter Values (tidy enrollment via `fetch_enr(tidy = TRUE)`)
+
+### subgroup
+
+`total_enrollment`, `white`, `black`, `hispanic`, `asian`,
+`native_american`, `pacific_islander`, `multiracial`, `male`, `female`,
+`special_ed`, `lep`, `econ_disadv`
+
+**Note:** Demographics, gender, and special populations may not be
+available in standard NH DOE iPlatform enrollment reports. These columns
+exist in the schema but may be `NA` depending on the data source.
+
+### grade_level
+
+`EE`, `PK`, `K`, `01`, `02`, `03`, `04`, `05`, `06`, `07`, `08`, `09`,
+`10`, `11`, `12`, `TOTAL`
+
+**Note:** New Hampshire includes an `EE` (Early Education) grade level
+in addition to the standard PK-12 range.
+
+Grade aggregates from
+[`enr_grade_aggs()`](https://almartin82.github.io/nhschooldata/reference/enr_grade_aggs.md):
+`K8`, `HS`, `K12`
+
+### entity flags
+
+`is_state`, `is_district`, `is_campus`, `is_charter`
+
+Entity types in `type` column: `"State"`, `"District"`, `"Campus"`
+
+**Note:** `is_charter` is derived from the `charter_flag` column (value
+`"Y"`).
