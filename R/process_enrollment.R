@@ -28,13 +28,23 @@
 #' @keywords internal
 process_enr <- function(raw_data, end_year) {
 
-  # Process school data
+  # Check if data is already in processed format (from bundled data)
+  # Bundled data has 'type' and 'row_total' columns already set
+  if (!is.null(raw_data$district) && "type" %in% names(raw_data$district) &&
+      "row_total" %in% names(raw_data$district)) {
+    # Already processed -- just combine and add state aggregate
+    district_processed <- raw_data$district
+    school_processed <- if (!is.null(raw_data$school)) raw_data$school else
+      create_empty_enrollment_df(end_year, "Campus")
+
+    state_processed <- create_state_aggregate(district_processed, end_year)
+    result <- dplyr::bind_rows(state_processed, district_processed, school_processed)
+    return(result)
+  }
+
+  # Process raw data from iPlatform download
   school_processed <- process_school_enr(raw_data$school, end_year)
-
-  # Process district data
   district_processed <- process_district_enr(raw_data$district, end_year)
-
-  # Create state aggregate
   state_processed <- create_state_aggregate(district_processed, end_year)
 
   # Combine all levels

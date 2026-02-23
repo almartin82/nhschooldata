@@ -40,41 +40,36 @@ safe_numeric <- function(x) {
 #' @examples
 #' get_available_years()
 get_available_years <- function() {
-  # NH DOE iPlatform data availability
-  # The iPlatform provides enrollment reports dating back approximately 10 years
-  # Data is collected on October 1 of each school year
-  #
-  # Note: Exact historical availability varies by report type
+  # Check bundled data first
+  bundled_years <- get_bundled_years()
 
-  current_year <- as.integer(format(Sys.Date(), "%Y"))
-  current_month <- as.integer(format(Sys.Date(), "%m"))
-
-  # NH DOE releases fall enrollment data after October 1
-  # Data for current school year is typically available by late fall
-  # Note: Capped at 2025 for confirmed data availability
-  if (current_month >= 11) {
-    # After November: current school year data likely available
-    max_year <- min(current_year + 1, 2025L)
-  } else if (current_month >= 9) {
-    # September-October: current year data being collected
-    max_year <- min(current_year, 2025L)
+  if (!is.null(bundled_years) && length(bundled_years) > 0) {
+    min_year <- min(bundled_years)
+    max_year <- max(bundled_years)
   } else {
-    # January-August: previous school year is most recent
-    max_year <- min(current_year, 2025L)
-  }
+    # Fall back to estimated range
+    current_year <- as.integer(format(Sys.Date(), "%Y"))
+    current_month <- as.integer(format(Sys.Date(), "%m"))
 
-  # iPlatform typically provides about 10 years of historical data
-  min_year <- max_year - 10
+    if (current_month >= 11) {
+      max_year <- min(current_year + 1, 2025L)
+    } else if (current_month >= 9) {
+      max_year <- min(current_year, 2025L)
+    } else {
+      max_year <- min(current_year, 2025L)
+    }
+    min_year <- max_year - 10
+  }
 
   list(
     min_year = min_year,
     max_year = max_year,
-    source = "New Hampshire Department of Education iPlatform",
+    source = "New Hampshire Department of Education",
     note = paste0(
       "Data availability: ", min_year, "-", max_year, ". ",
-      "NH DOE iPlatform provides approximately 10 years of historical data. ",
-      "Enrollment is measured on October 1 of each school year. ",
-      "Access data at: https://my.doe.nh.gov/iPlatform"
+      "NH DOE enrollment data is collected on October 1 of each school year. ",
+      "Primary source: bundled data matching NH DOE published figures. ",
+      "Access raw reports at: https://my.doe.nh.gov/iPlatform"
     )
   )
 }
