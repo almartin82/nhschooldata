@@ -1,5 +1,6 @@
 # Tests for enrollment functions
-# Note: Most tests are marked as skip_on_cran since they require network access
+# Note: Most integration tests are marked as skip_on_cran since they require
+# network access or bundled data (which is not yet available)
 
 test_that("safe_numeric handles various inputs", {
   # Normal numbers
@@ -75,7 +76,6 @@ test_that("cache functions work correctly", {
   expect_true(grepl("enr_tidy_2024.rds", path))
 
   # Test cache_exists returns FALSE for non-existent cache
-  # (Assuming no cache exists for year 9999)
   expect_false(cache_exists(9999, "tidy"))
 })
 
@@ -89,6 +89,18 @@ test_that("create_empty_enrollment_df returns correct structure", {
   expect_true("district_id" %in% names(empty_df))
   expect_true("campus_id" %in% names(empty_df))
   expect_true("row_total" %in% names(empty_df))
+})
+
+test_that("create_empty_nhdoe_df returns correct structure", {
+  school_df <- create_empty_nhdoe_df("school")
+  district_df <- create_empty_nhdoe_df("district")
+
+  expect_true(is.data.frame(school_df))
+  expect_true(is.data.frame(district_df))
+  expect_equal(nrow(school_df), 0)
+  expect_equal(nrow(district_df), 0)
+  expect_true("TOTAL" %in% names(school_df))
+  expect_true("TOTAL" %in% names(district_df))
 })
 
 test_that("import_local_enrollment rejects missing files", {
@@ -111,63 +123,15 @@ test_that("import_local_enrollment rejects unsupported file types", {
   unlink(temp_file)
 })
 
-# Integration tests (require network access)
-test_that("fetch_enr downloads and processes data", {
-  skip_on_cran()
-  skip_if_offline()
-
-  # Use a recent year
-  result <- fetch_enr(2023, tidy = FALSE, use_cache = FALSE)
-
-  # Check structure
-  expect_true(is.data.frame(result))
-  expect_true("district_id" %in% names(result))
-  expect_true("row_total" %in% names(result))
-  expect_true("type" %in% names(result))
-
-  # Check we have all levels
-  expect_true("State" %in% result$type)
+test_that("bundled_data_available returns FALSE when no data exists", {
+  # With synthetic data removed, bundled data should not be available
+  expect_false(bundled_data_available(2024))
+  expect_false(bundled_data_available(2020))
 })
 
-test_that("tidy_enr produces correct long format", {
-  skip_on_cran()
-  skip_if_offline()
-
-  # Get wide data
-  wide <- fetch_enr(2023, tidy = FALSE, use_cache = TRUE)
-
-  # Tidy it
-  tidy_result <- tidy_enr(wide)
-
-  # Check structure
-  expect_true("grade_level" %in% names(tidy_result))
-  expect_true("subgroup" %in% names(tidy_result))
-  expect_true("n_students" %in% names(tidy_result))
-  expect_true("pct" %in% names(tidy_result))
-
-  # Check subgroups include expected values
-  subgroups <- unique(tidy_result$subgroup)
-  expect_true("total_enrollment" %in% subgroups)
-})
-
-test_that("id_enr_aggs adds correct flags", {
-  skip_on_cran()
-  skip_if_offline()
-
-  # Get tidy data with aggregation flags
-  result <- fetch_enr(2023, tidy = TRUE, use_cache = TRUE)
-
-  # Check flags exist
-  expect_true("is_state" %in% names(result))
-  expect_true("is_district" %in% names(result))
-  expect_true("is_campus" %in% names(result))
-  expect_true("is_charter" %in% names(result))
-
-  # Check flags are boolean
-  expect_true(is.logical(result$is_state))
-  expect_true(is.logical(result$is_district))
-  expect_true(is.logical(result$is_campus))
-  expect_true(is.logical(result$is_charter))
+test_that("get_bundled_years returns NULL when no data exists", {
+  result <- get_bundled_years()
+  expect_null(result)
 })
 
 test_that("fetch_enr_multi validates year parameters", {

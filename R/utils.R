@@ -35,6 +35,10 @@ safe_numeric <- function(x) {
 #' NH DOE iPlatform provides enrollment data for approximately the
 #' current year plus 10 prior years. Data availability may vary.
 #'
+#' Note: No bundled data is currently available. The iPlatform requires
+#' browser-based access. Use \code{\link{import_local_enrollment}} to
+#' load manually downloaded files.
+#'
 #' @return Named list with min_year, max_year, source, and note
 #' @export
 #' @examples
@@ -46,19 +50,21 @@ get_available_years <- function() {
   if (!is.null(bundled_years) && length(bundled_years) > 0) {
     min_year <- min(bundled_years)
     max_year <- max(bundled_years)
+    data_status <- "bundled data available"
   } else {
-    # Fall back to estimated range
+    # Estimated range based on NH DOE iPlatform typical availability
     current_year <- as.integer(format(Sys.Date(), "%Y"))
     current_month <- as.integer(format(Sys.Date(), "%m"))
 
     if (current_month >= 11) {
-      max_year <- min(current_year + 1, 2025L)
+      max_year <- min(current_year + 1, 2026L)
     } else if (current_month >= 9) {
-      max_year <- min(current_year, 2025L)
+      max_year <- min(current_year, 2026L)
     } else {
-      max_year <- min(current_year, 2025L)
+      max_year <- min(current_year, 2026L)
     }
     min_year <- max_year - 10
+    data_status <- "no bundled data; live download or manual import required"
   }
 
   list(
@@ -67,8 +73,8 @@ get_available_years <- function() {
     source = "New Hampshire Department of Education",
     note = paste0(
       "Data availability: ", min_year, "-", max_year, ". ",
+      "Status: ", data_status, ". ",
       "NH DOE enrollment data is collected on October 1 of each school year. ",
-      "Primary source: bundled data matching NH DOE published figures. ",
       "Access raw reports at: https://my.doe.nh.gov/iPlatform"
     )
   )
