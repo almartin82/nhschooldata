@@ -74,25 +74,19 @@ data)
 
 ## Current Status
 
-**IMPORTANT**: The NH DOE iPlatform requires browser-based access. The
-automatic download functionality may fail, requiring users to:
+**UNDER CONSTRUCTION**: No bundled data is available. Synthetic data
+that was previously shipped (using set.seed/runif) has been removed. The
+iPlatform requires browser-based access, which prevents automated
+downloads.
 
-1.  Visit the iPlatform directly:
-
-    - District enrollment:
-      <https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9>
-    - School enrollment:
-      <https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10>
-
-2.  Download the Excel files manually
-
-3.  Use
-    [`import_local_enrollment()`](https://almartin82.github.io/nhschooldata/reference/import_local_enrollment.md)
-    to load the data:
-
-    ``` r
-    df <- import_local_enrollment("~/Downloads/district-fall-enrollment.xlsx", 2024, "district")
-    ```
+Users can: 1. Visit the iPlatform directly: - District enrollment:
+<https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9> -
+School enrollment:
+<https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10>
+2. Download the Excel files manually 3. Use
+[`import_local_enrollment()`](https://almartin82.github.io/nhschooldata/reference/import_local_enrollment.md)
+to load the data:
+`r df <- import_local_enrollment("~/Downloads/district-fall-enrollment.xlsx", 2024, "district")`
 
 ## Key Functions
 
@@ -197,11 +191,13 @@ get_available_years()
 
 ## TODO
 
+Download real enrollment data from iPlatform and bundle in inst/extdata/
+
 Investigate browser automation (RSelenium) for automated downloads
 
-Consider bundling static data files in `inst/extdata/` like rischooldata
-
 Add demographic data if/when available from NH DOE
+
+Rebuild vignette stories once real data is available
 
 ------------------------------------------------------------------------
 

@@ -8,6 +8,7 @@
 <url><loc>https://almartin82.github.io/nhschooldata/articles/index.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/authors.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/index.html</loc></url>
+<url><loc>https://almartin82.github.io/nhschooldata/reference/bundled_data_available.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/cache_exists.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/cache_status.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/clean_names.html</loc></url>
@@ -24,12 +25,14 @@
 <url><loc>https://almartin82.github.io/nhschooldata/reference/fetch_enr_multi.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/format_school_year.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/get_available_years.html</loc></url>
+<url><loc>https://almartin82.github.io/nhschooldata/reference/get_bundled_years.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/get_cache_dir.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/get_cache_path.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/get_raw_enr.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/id_enr_aggs.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/import_local_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/index.html</loc></url>
+<url><loc>https://almartin82.github.io/nhschooldata/reference/load_bundled_enr.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/nhschooldata-package.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/parse_district_id.html</loc></url>
 <url><loc>https://almartin82.github.io/nhschooldata/reference/process_district_enr.html</loc></url>

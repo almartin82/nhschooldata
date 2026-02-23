@@ -1,9 +1,5 @@
 # nhschooldata
 
-**[Documentation](https://almartin82.github.io/nhschooldata/)** \|
-**[Enrollment
-Trends](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html)**
-
 Fetch and analyze New Hampshire school enrollment data from the NH
 Department of Education in R or Python.
 
@@ -11,530 +7,94 @@ Part of the [state schooldata
 project](https://github.com/almartin82?tab=repositories&q=schooldata),
 inspired by [njschooldata](https://github.com/almartin82/njschooldata).
 
-## What can you find with nhschooldata?
+## Status: Under Construction
 
-**10 years of enrollment data (2015-2025).** Approximately 165,000
-students. Around 162 districts organized into SAUs. Here are fifteen
-stories hiding in the numbers – see the [Enrollment Trends
-vignette](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html)
-for interactive visualizations:
+This package’s data pipeline is **not yet functional**. The NH DOE
+[iPlatform](https://my.doe.nh.gov/iPlatform) requires browser-based
+authentication, which prevents automated data downloads. The package
+infrastructure (fetching, processing, tidying) is built and ready, but
+**no real enrollment data is currently bundled**.
 
-------------------------------------------------------------------------
+Previously, this package shipped synthetic data generated with
+[`set.seed()`](https://rdrr.io/r/base/Random.html) /
+[`runif()`](https://rdrr.io/r/stats/Uniform.html). That data has been
+removed because every number in a schooldata package must trace back to
+a real state DOE source.
 
-### 1. New Hampshire serves roughly 165,000 public school students
+### What is being investigated
 
-Despite being one of the smallest states, New Hampshire maintains a
-robust public education system. Tracking statewide totals reveals how
-enrollment has shifted over the past decade.
+1.  **Manual download + bundle** – download enrollment files from
+    iPlatform by hand and commit them to `inst/extdata/`
+2.  **Browser automation** – use RSelenium or Playwright to script
+    iPlatform downloads
+3.  **Alternative state source** – if NH DOE publishes data in another
+    format
+
+### Manual data access (available now)
+
+You can download data directly from the NH DOE:
+
+- **District enrollment**:
+  <https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9>
+- **School enrollment**:
+  <https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10>
+
+Then import locally:
 
 ``` r
 library(nhschooldata)
-library(dplyr)
 
-enr <- fetch_enr_multi(2016:2024, use_cache = TRUE)
-
-statewide <- enr %>%
-  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  select(end_year, n_students)
-
-statewide
+df <- import_local_enrollment(
+  "~/Downloads/district-fall-enrollment.xlsx",
+  end_year = 2024,
+  level = "district"
+)
 ```
-
-![Statewide
-enrollment](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/statewide-chart-1.png)
-
-Statewide enrollment
-
-------------------------------------------------------------------------
-
-### 2. Manchester is New Hampshire’s school giant
-
-Manchester School District is the state’s largest by a wide margin,
-serving more students than any other district in the Granite State. Here
-are the top 10 districts by enrollment.
-
-``` r
-enr_2024 <- fetch_enr(2024, use_cache = TRUE)
-
-top_districts <- enr_2024 %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  arrange(desc(n_students)) %>%
-  head(10) %>%
-  select(district_name, n_students)
-
-top_districts
-```
-
-![Top
-districts](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/top-districts-chart-1.png)
-
-Top districts
-
-------------------------------------------------------------------------
-
-### 3. Manchester and Nashua together enroll a significant share of the state
-
-New Hampshire’s two largest cities – Manchester and Nashua – combined
-account for a disproportionate share of the state’s public school
-students. Tracking their combined share over time shows how concentrated
-enrollment is.
-
-``` r
-big_cities <- enr %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
-         grepl("Manchester|Nashua", district_name)) %>%
-  group_by(end_year) %>%
-  summarize(combined = sum(n_students, na.rm = TRUE), .groups = "drop")
-
-state_totals <- enr %>%
-  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  select(end_year, state_total = n_students)
-
-big_cities %>%
-  left_join(state_totals, by = "end_year") %>%
-  mutate(pct_of_state = round(combined / state_total * 100, 1))
-```
-
-------------------------------------------------------------------------
-
-### 4. New Hampshire is becoming more diverse
-
-New Hampshire is one of the whitest states in America, but its student
-demographics are shifting. Hispanic, Asian, and multiracial populations
-have been growing as a share of total enrollment.
-
-``` r
-enr_demo <- fetch_enr_multi(c(2016, 2018, 2020, 2024), use_cache = TRUE)
-
-demographics <- enr_demo %>%
-  filter(is_state, grade_level == "TOTAL",
-         subgroup %in% c("white", "hispanic", "asian", "black", "multiracial")) %>%
-  group_by(end_year) %>%
-  mutate(pct = n_students / sum(n_students) * 100) %>%
-  ungroup() %>%
-  select(end_year, subgroup, pct)
-
-demographics_wide <- demographics %>%
-  tidyr::pivot_wider(names_from = subgroup, values_from = pct)
-
-demographics_wide
-```
-
-![Demographics](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/demographics-chart-1.png)
-
-Demographics
-
-------------------------------------------------------------------------
-
-### 5. The Seacoast grows while the North Country empties out
-
-New Hampshire’s geography creates a stark enrollment divide. Seacoast
-communities like Portsmouth, Dover, and Exeter attract families, while
-North Country districts in Berlin, Colebrook, and Gorham face declining
-populations as young people leave.
-
-``` r
-seacoast <- c("Portsmouth", "Dover", "Rochester", "Exeter", "Hampton")
-north_country <- c("Berlin", "Colebrook", "Lancaster", "Littleton", "Gorham")
-
-enr_regional <- fetch_enr_multi(c(2016, 2018, 2021, 2024), use_cache = TRUE)
-
-regional <- enr_regional %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  mutate(region = case_when(
-    grepl(paste(seacoast, collapse = "|"), district_name) ~ "Seacoast",
-    grepl(paste(north_country, collapse = "|"), district_name) ~ "North Country",
-    TRUE ~ "Other"
-  )) %>%
-  filter(region %in% c("Seacoast", "North Country")) %>%
-  group_by(end_year, region) %>%
-  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
-
-regional
-```
-
-![Regional
-trends](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/regional-chart-1.png)
-
-Regional trends
-
-------------------------------------------------------------------------
-
-### 6. Kindergarten enrollment signals what is coming for NH schools
-
-Kindergarten enrollment is a leading indicator for future school
-enrollment. Year-over-year changes in kindergarten classes ripple
-through the system for the next 12 years.
-
-``` r
-kindergarten <- enr %>%
-  filter(is_state, subgroup == "total_enrollment", grade_level == "K") %>%
-  select(end_year, k_students = n_students)
-
-# Calculate year-over-year change
-kindergarten %>%
-  mutate(
-    change = k_students - lag(k_students),
-    pct_change = round(change / lag(k_students) * 100, 1)
-  )
-```
-
-------------------------------------------------------------------------
-
-### 7. Grade-level enrollment reveals the student pipeline
-
-Tracking key grade milestones – kindergarten entry, 5th grade, 9th
-grade, and 12th grade graduation – shows how cohorts shrink or grow as
-they move through the system.
-
-``` r
-enr_grades <- fetch_enr_multi(2016:2024, use_cache = TRUE)
-
-grades <- enr_grades %>%
-  filter(is_state, subgroup == "total_enrollment",
-         grade_level %in% c("K", "01", "05", "09", "12")) %>%
-  select(end_year, grade_level, n_students) %>%
-  mutate(grade_label = case_when(
-    grade_level == "K" ~ "Kindergarten",
-    grade_level == "01" ~ "1st Grade",
-    grade_level == "05" ~ "5th Grade",
-    grade_level == "09" ~ "9th Grade",
-    grade_level == "12" ~ "12th Grade"
-  ))
-
-grades
-```
-
-![Grade level
-trends](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/grade-level-chart-1.png)
-
-Grade level trends
-
-------------------------------------------------------------------------
-
-### 8. Most NH districts are tiny – shared SAUs hold the system together
-
-New Hampshire has a fragmented district landscape. Most districts enroll
-fewer than 300 students and depend on School Administrative Units (SAUs)
-to share superintendents and central office staff.
-
-``` r
-district_sizes <- enr_2024 %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  mutate(size = case_when(
-    n_students >= 3000 ~ "Large (3,000+)",
-    n_students >= 1000 ~ "Medium (1,000-2,999)",
-    n_students >= 300 ~ "Small (300-999)",
-    TRUE ~ "Tiny (<300)"
-  )) %>%
-  count(size) %>%
-  mutate(size = factor(size, levels = c("Tiny (<300)", "Small (300-999)",
-                                         "Medium (1,000-2,999)", "Large (3,000+)")))
-
-district_sizes
-```
-
-![District
-sizes](https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/district-size-chart-1.png)
-
-District sizes
-
-------------------------------------------------------------------------
-
-### 9. The smallest districts in NH have fewer students than a single classroom
-
-Some New Hampshire districts enroll so few students that they barely
-fill one classroom per grade. These micro-districts survive through SAU
-partnerships and regional school agreements.
-
-``` r
-tiny_districts <- enr_2024 %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
-         n_students < 200) %>%
-  arrange(n_students) %>%
-  head(10) %>%
-  select(district_name, n_students)
-
-tiny_districts
-```
-
-------------------------------------------------------------------------
-
-### 10. High school enrollment tracks the graduating pipeline
-
-Following grades 9-12 over time shows how many students are in the
-graduation pipeline. Changes here directly affect workforce readiness
-and college enrollment across the state.
-
-``` r
-high_school <- enr %>%
-  filter(is_state, subgroup == "total_enrollment",
-         grade_level %in% c("09", "10", "11", "12")) %>%
-  group_by(end_year) %>%
-  summarize(hs_total = sum(n_students, na.rm = TRUE), .groups = "drop")
-
-high_school
-```
-
-------------------------------------------------------------------------
-
-### 11. Elementary outnumbers secondary – but by how much?
-
-The balance between elementary (K-5) and secondary (6-12) enrollment
-affects staffing, facility planning, and per-pupil spending across the
-state.
-
-``` r
-elem_grades <- c("K", "01", "02", "03", "04", "05")
-sec_grades <- c("06", "07", "08", "09", "10", "11", "12")
-
-level_comparison <- enr %>%
-  filter(is_state, subgroup == "total_enrollment") %>%
-  mutate(level = case_when(
-    grade_level %in% elem_grades ~ "Elementary",
-    grade_level %in% sec_grades ~ "Secondary",
-    TRUE ~ NA_character_
-  )) %>%
-  filter(!is.na(level)) %>%
-  group_by(end_year, level) %>%
-  summarize(students = sum(n_students, na.rm = TRUE), .groups = "drop")
-
-level_comparison
-```
-
-------------------------------------------------------------------------
-
-### 12. Which districts are growing the fastest?
-
-While overall enrollment trends get the headlines, individual districts
-tell different stories. Some communities are booming with new housing
-development while others bleed students year after year.
-
-``` r
-growth <- enr %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
-         end_year %in% c(2016, 2024)) %>%
-  select(district_name, end_year, n_students) %>%
-  tidyr::pivot_wider(names_from = end_year, values_from = n_students,
-                     names_prefix = "y")
-
-# Calculate growth if data exists
-if (nrow(growth) > 0 && "y2024" %in% names(growth) && "y2016" %in% names(growth)) {
-  growth <- growth %>%
-    mutate(
-      change = y2024 - y2016,
-      pct_change = round(change / y2016 * 100, 1)
-    ) %>%
-    arrange(desc(pct_change)) %>%
-    head(10)
-}
-
-growth
-```
-
-------------------------------------------------------------------------
-
-### 13. Middle grades (6-8) carry the demographic wave
-
-Middle school enrollment changes lag elementary shifts by about 5 years.
-Watching grades 6-8 reveals what happened to kindergarten classes half a
-decade ago.
-
-``` r
-middle_grades <- enr %>%
-  filter(is_state, subgroup == "total_enrollment",
-         grade_level %in% c("06", "07", "08")) %>%
-  group_by(end_year) %>%
-  summarize(middle_total = sum(n_students, na.rm = TRUE), .groups = "drop")
-
-middle_grades
-```
-
-------------------------------------------------------------------------
-
-### 14. How many schools does each district operate?
-
-Large districts run dozens of schools while tiny districts may have just
-one. The ratio of students to schools reveals which districts achieve
-economies of scale and which spread thin.
-
-``` r
-school_counts <- enr_2024 %>%
-  filter(is_campus, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  group_by(district_name) %>%
-  summarize(n_schools = n(), .groups = "drop")
-
-district_enrollment <- enr_2024 %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  select(district_name, district_enrollment = n_students)
-
-school_counts %>%
-  left_join(district_enrollment, by = "district_name") %>%
-  mutate(avg_school_size = round(district_enrollment / n_schools, 0)) %>%
-  arrange(desc(n_schools)) %>%
-  head(10)
-```
-
-------------------------------------------------------------------------
-
-### 15. Year-over-year enrollment changes reveal boom and bust cycles
-
-Annual enrollment changes at the state level show whether New Hampshire
-is gaining or losing students. Even small percentage changes compound
-over time into major shifts for school budgets and staffing.
-
-``` r
-state_changes <- enr %>%
-  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  arrange(end_year) %>%
-  mutate(
-    change = n_students - lag(n_students),
-    pct_change = round(change / lag(n_students) * 100, 2)
-  ) %>%
-  select(end_year, n_students, change, pct_change)
-
-state_changes
-```
-
-------------------------------------------------------------------------
 
 ## Installation
-
-``` r
-# install.packages("remotes")
-remotes::install_github("almartin82/nhschooldata")
-```
-
-## Quick start
 
 ### R
 
 ``` r
-library(nhschooldata)
-library(dplyr)
-
-# Fetch one year
-enr_2024 <- fetch_enr(2024)
-
-# Fetch multiple years
-enr_recent <- fetch_enr_multi(2019:2024)
-
-# State totals
-enr_2024 %>%
-  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL")
-
-# District breakdown
-enr_2024 %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  arrange(desc(n_students))
-
-# Check available years
-get_available_years()
+remotes::install_github("almartin82/nhschooldata")
 ```
 
 ### Python
 
-``` python
-import pynhschooldata as nh
-
-# Fetch one year
-enr_2024 = nh.fetch_enr(2024)
-
-# Fetch multiple years
-enr_recent = nh.fetch_enr_multi([2019, 2020, 2021, 2022, 2023, 2024])
-
-# State totals
-state = enr_2024[
-    (enr_2024['is_state']) &
-    (enr_2024['subgroup'] == 'total_enrollment') &
-    (enr_2024['grade_level'] == 'TOTAL')
-]
-
-# District breakdown
-districts = enr_2024[
-    (enr_2024['is_district']) &
-    (enr_2024['subgroup'] == 'total_enrollment') &
-    (enr_2024['grade_level'] == 'TOTAL')
-].sort_values('n_students', ascending=False)
-
-# Check available years
-years = nh.get_available_years()
-print(f"Data available from {years['min_year']} to {years['max_year']}")
+``` bash
+pip install git+https://github.com/almartin82/nhschooldata.git#subdirectory=pynhschooldata
 ```
-
-## Data Availability
-
-| Years         | Source           | Notes                            |
-|---------------|------------------|----------------------------------|
-| **2015-2025** | NH DOE iPlatform | October 1st fall enrollment data |
-
-### What’s included
-
-- **Levels:** State, district (~162), school (~456)
-- **Demographics:** White, Black, Hispanic, Asian, Native American,
-  Pacific Islander, Two or More Races
-- **Gender:** Male, Female (where available)
-- **Grade levels:** PK-12 plus totals
 
 ## Data Notes
 
-### Data Source
+| Item                 | Detail                                                                   |
+|----------------------|--------------------------------------------------------------------------|
+| **Source**           | [NH DOE iPlatform](https://my.doe.nh.gov/iPlatform)                      |
+| **Entity types**     | ~162 districts (organized into SAUs), ~456 schools                       |
+| **Census day**       | October 1 of each school year                                            |
+| **Known limitation** | iPlatform requires browser-based access; automated downloads do not work |
+| **Suppression**      | Counts \< 10 may be suppressed with `*`                                  |
 
-New Hampshire Department of Education iPlatform:
-[my.doe.nh.gov/iPlatform](https://my.doe.nh.gov/iPlatform)
+## API Overview
 
-### Collection Date
+The package API is ready – it just needs real data behind it.
 
-October 1st of each school year (fall enrollment snapshot).
+``` r
+library(nhschooldata)
 
-### SAU Structure
+# Check what years are available
+get_available_years()
 
-New Hampshire uses School Administrative Units (SAUs) to manage
-administrative functions for small districts. A single SAU may oversee
-multiple small districts sharing a superintendent and central office
-staff.
+# Fetch enrollment (will attempt live download, then bundled data)
+enr <- fetch_enr(2024)
 
-### Data Access Note
+# Multi-year fetch
+enr_multi <- fetch_enr_multi(2020:2024)
 
-The NH DOE iPlatform uses browser-based access that may require manual
-download. If automatic download fails, you can:
+# Import a manually downloaded file
+df <- import_local_enrollment("path/to/file.xlsx", 2024, "district")
 
-1.  Visit the iPlatform directly:
-
-    - District enrollment:
-      [my.doe.nh.gov/iPlatform](https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9)
-    - School enrollment:
-      [my.doe.nh.gov/iPlatform](https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10)
-
-2.  Download the Excel files
-
-3.  Use
-    [`import_local_enrollment()`](https://almartin82.github.io/nhschooldata/reference/import_local_enrollment.md)
-    to load:
-
-    ``` r
-    df <- import_local_enrollment("~/Downloads/enrollment.xlsx", 2024, "district")
-    ```
-
-### Year Convention
-
-Years use the END YEAR of the school year: - `2024` = 2023-24 school
-year - `2025` = 2024-25 school year
-
-## Part of the State Schooldata Project
-
-This package is part of the
-[njschooldata](https://github.com/almartin82/njschooldata) family - a
-simple, consistent interface for accessing state-published school data
-in Python and R.
-
-**All 50 state packages:**
-[github.com/almartin82](https://github.com/almartin82?tab=repositories&q=schooldata)
-
-## Author
-
-[Andy Martin](https://github.com/almartin82) (<almartin@gmail.com>)
-
-## License
-
-MIT
+# Cache management
+cache_status()
+clear_cache()
+```

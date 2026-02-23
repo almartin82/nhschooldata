@@ -97,26 +97,14 @@
 </div>
 <div class="section level2">
 <h2 id="current-status">Current Status<a class="anchor" aria-label="anchor" href="#current-status"></a></h2>
-<p><strong>IMPORTANT</strong>: The NH DOE iPlatform requires browser-based access. The automatic download functionality may fail, requiring users to:</p>
-<ol style="list-style-type: decimal"><li>
-<p>Visit the iPlatform directly:</p>
-<ul><li>District enrollment: <a href="https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9" class="external-link uri">https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9</a>
-</li>
-<li>School enrollment: <a href="https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10" class="external-link uri">https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10</a>
-</li>
-</ul></li>
-<li><p>Download the Excel files manually</p></li>
-<li>
-<p>Use <code><a href="reference/import_local_enrollment.html">import_local_enrollment()</a></code> to load the data:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/import_local_enrollment.html">import_local_enrollment</a></span><span class="op">(</span><span class="st">"~/Downloads/district-fall-enrollment.xlsx"</span>, <span class="fl">2024</span>, <span class="st">"district"</span><span class="op">)</span></span></code></pre></div>
-</li>
-</ol></div>
+<p><strong>UNDER CONSTRUCTION</strong>: No bundled data is available. Synthetic data that was previously shipped (using set.seed/runif) has been removed. The iPlatform requires browser-based access, which prevents automated downloads.</p>
+<p>Users can: 1. Visit the iPlatform directly: - District enrollment: <a href="https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9" class="external-link uri">https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9</a> - School enrollment: <a href="https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10" class="external-link uri">https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10</a> 2. Download the Excel files manually 3. Use <code><a href="reference/import_local_enrollment.html">import_local_enrollment()</a></code> to load the data: <code>r    df &lt;- import_local_enrollment("~/Downloads/district-fall-enrollment.xlsx", 2024, "district")</code></p>
+</div>
 <div class="section level2">
 <h2 id="key-functions">Key Functions<a class="anchor" aria-label="anchor" href="#key-functions"></a></h2>
 <div class="section level3">
 <h3 id="main-api">Main API<a class="anchor" aria-label="anchor" href="#main-api"></a></h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch enrollment data for a single year</span></span>
 <span><span class="va">enr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span>  <span class="co"># 2023-24 school year</span></span>
 <span></span>
@@ -131,7 +119,7 @@
 </div>
 <div class="section level3">
 <h3 id="helper-functions">Helper Functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a></h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Available years</span></span>
 <span><span class="fu"><a href="reference/get_available_years.html">get_available_years</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -203,21 +191,22 @@
 <div class="section level3">
 <h3 id="stale-cache-data">Stale cache data<a class="anchor" aria-label="anchor" href="#stale-cache-data"></a></h3>
 <p>Clear the cache:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/clear_cache.html">clear_cache</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="year-not-found">Year not found<a class="anchor" aria-label="anchor" href="#year-not-found"></a></h3>
 <p>Check available years:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/get_available_years.html">get_available_years</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="todo">TODO<a class="anchor" aria-label="anchor" href="#todo"></a></h2>
-<ul class="task-list"><li><label><input type="checkbox">Investigate browser automation (RSelenium) for automated downloads</label></li>
-<li><label><input type="checkbox">Consider bundling static data files in <code>inst/extdata/</code> like rischooldata</label></li>
+<ul class="task-list"><li><label><input type="checkbox">Download real enrollment data from iPlatform and bundle in inst/extdata/</label></li>
+<li><label><input type="checkbox">Investigate browser automation (RSelenium) for automated downloads</label></li>
 <li><label><input type="checkbox">Add demographic data if/when available from NH DOE</label></li>
+<li><label><input type="checkbox">Rebuild vignette stories once real data is available</label></li>
 </ul><hr></div>
 <div class="section level2">
 <h2 id="live-pipeline-testing">LIVE Pipeline Testing<a class="anchor" aria-label="anchor" href="#live-pipeline-testing"></a></h2>
@@ -235,7 +224,7 @@
 </ol></div>
 <div class="section level3">
 <h3 id="running-tests">Running Tests:<a class="anchor" aria-label="anchor" href="#running-tests"></a></h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span>filter <span class="op">=</span> <span class="st">"pipeline-live"</span><span class="op">)</span></span></code></pre></div>
 <p>See <code>state-schooldata/CLAUDE.md</code> for complete testing framework documentation.</p>
 <hr></div>
@@ -245,29 +234,29 @@
 <div class="section level3">
 <h3 id="feature-branch--pr--auto-merge-policy">Feature Branch + PR + Auto-Merge Policy<a class="anchor" aria-label="anchor" href="#feature-branch--pr--auto-merge-policy"></a></h3>
 <p><strong>NEVER push directly to main.</strong> All changes must go through PRs with auto-merge:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># 1. Create feature branch</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> fix/description-of-change</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># 2. Make changes, commit</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-A</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Fix: description of change"</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co"># 3. Push and create PR with auto-merge</span></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin fix/description-of-change</span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="ex">gh</span> pr create <span class="at">--title</span> <span class="st">"Fix: description"</span> <span class="at">--body</span> <span class="st">"Description of changes"</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="ex">gh</span> pr merge <span class="at">--auto</span> <span class="at">--squash</span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co"># 4. Clean up stale branches after PR merges</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="fu">git</span> checkout main <span class="kw">&amp;&amp;</span> <span class="fu">git</span> pull <span class="kw">&amp;&amp;</span> <span class="fu">git</span> fetch <span class="at">--prune</span> origin</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># 1. Create feature branch</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> fix/description-of-change</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># 2. Make changes, commit</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-A</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Fix: description of change"</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co"># 3. Push and create PR with auto-merge</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin fix/description-of-change</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="ex">gh</span> pr create <span class="at">--title</span> <span class="st">"Fix: description"</span> <span class="at">--body</span> <span class="st">"Description of changes"</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="ex">gh</span> pr merge <span class="at">--auto</span> <span class="at">--squash</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co"># 4. Clean up stale branches after PR merges</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="fu">git</span> checkout main <span class="kw">&amp;&amp;</span> <span class="fu">git</span> pull <span class="kw">&amp;&amp;</span> <span class="fu">git</span> fetch <span class="at">--prune</span> origin</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="branch-cleanup-required">Branch Cleanup (REQUIRED)<a class="anchor" aria-label="anchor" href="#branch-cleanup-required"></a></h3>
 <p><strong>Clean up stale branches every time you touch this package:</strong></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Delete local branches merged to main</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">git</span> branch <span class="at">--merged</span> main <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-v</span> main <span class="kw">|</span> <span class="fu">xargs</span> <span class="at">-r</span> git branch <span class="at">-d</span></span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co"># Prune remote tracking branches</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="fu">git</span> fetch <span class="at">--prune</span> origin</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Delete local branches merged to main</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">git</span> branch <span class="at">--merged</span> main <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-v</span> main <span class="kw">|</span> <span class="fu">xargs</span> <span class="at">-r</span> git branch <span class="at">-d</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># Prune remote tracking branches</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">git</span> fetch <span class="at">--prune</span> origin</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="auto-merge-requirements">Auto-Merge Requirements<a class="anchor" aria-label="anchor" href="#auto-merge-requirements"></a></h3>
@@ -279,7 +268,7 @@
 <h2 id="readme-images-from-vignettes-required">README Images from Vignettes (REQUIRED)<a class="anchor" aria-label="anchor" href="#readme-images-from-vignettes-required"></a></h2>
 <p><strong>NEVER use <code>man/figures/</code> or <code>generate_readme_figs.R</code> for README images.</strong></p>
 <p>README images MUST come from pkgdown-generated vignette output so they auto-update on merge:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="al">![Chart name](https://almartin82.github.io/{package}/articles/{vignette}_files/figure-html/{chunk-name}-1.png)</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="al">![Chart name](https://almartin82.github.io/{package}/articles/{vignette}_files/figure-html/{chunk-name}-1.png)</span></span></code></pre></div>
 <p><strong>Why:</strong> Vignette figures regenerate automatically when pkgdown builds. Manual <code>man/figures/</code> requires running a separate script and is easy to forget, causing stale/broken images.</p>
 <hr></div>
 <div class="section level2">
