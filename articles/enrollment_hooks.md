@@ -33,16 +33,16 @@ statewide <- enr %>%
   select(end_year, n_students)
 
 statewide
-#>   end_year n_students
-#> 1     2016          0
-#> 2     2017          0
-#> 3     2018          0
-#> 4     2019          0
-#> 5     2020          0
-#> 6     2021          0
-#> 7     2022          0
-#> 8     2023          0
-#> 9     2024          0
+#>      end_year n_students
+#> ...1     2016     176541
+#> ...2     2017     175012
+#> ...3     2018     173489
+#> ...4     2019     172156
+#> ...5     2020     169027
+#> ...6     2021     170005
+#> ...7     2022     168631
+#> ...8     2023     167357
+#> ...9     2024     165095
 ```
 
 ``` r
@@ -79,8 +79,17 @@ top_districts <- enr_2024 %>%
   select(district_name, n_students)
 
 top_districts
-#> [1] district_name n_students   
-#> <0 rows> (or 0-length row.names)
+#>                             district_name n_students
+#> grade_pk...1   Manchester School District      14940
+#> grade_pk...2       Nashua School District      13091
+#> grade_pk...3      Concord School District       5610
+#> grade_pk...4  Londonderry School District       5236
+#> grade_pk...5      Bedford School District       5112
+#> grade_pk...6        Salem School District       4738
+#> grade_pk...7    Merrimack School District       4488
+#> grade_pk...8    Rochester School District       4364
+#> grade_pk...9        Dover School District       4114
+#> grade_pk...10     Windham School District       3990
 ```
 
 ``` r
@@ -124,9 +133,18 @@ state_totals <- enr %>%
 big_cities %>%
   left_join(state_totals, by = "end_year") %>%
   mutate(pct_of_state = round(combined / state_total * 100, 1))
-#> # A tibble: 0 × 4
-#> # ℹ 4 variables: end_year <int>, combined <int>, state_total <int>,
-#> #   pct_of_state <dbl>
+#> # A tibble: 9 × 4
+#>   end_year combined state_total pct_of_state
+#>      <int>    <dbl>       <dbl>        <dbl>
+#> 1     2016    32512      176541         18.4
+#> 2     2017    31914      175012         18.2
+#> 3     2018    31320      173489         18.1
+#> 4     2019    30761      172156         17.9
+#> 5     2020    29902      169027         17.7
+#> 6     2021    29770      170005         17.5
+#> 7     2022    29226      168631         17.3
+#> 8     2023    28710      167357         17.2
+#> 9     2024    28031      165095         17
 ```
 
 ### 4. New Hampshire is becoming more diverse
@@ -153,10 +171,10 @@ demographics_wide
 #> # A tibble: 4 × 6
 #>   end_year white black hispanic asian multiracial
 #>      <int> <dbl> <dbl>    <dbl> <dbl>       <dbl>
-#> 1     2016   NaN   NaN      NaN   NaN         NaN
-#> 2     2018   NaN   NaN      NaN   NaN         NaN
-#> 3     2020   NaN   NaN      NaN   NaN         NaN
-#> 4     2024   NaN   NaN      NaN   NaN         NaN
+#> 1     2016  88.3  1.98     4.41  2.86        2.43
+#> 2     2018  86.8  2.20     5.07  3.08        2.87
+#> 3     2020  85.2  2.42     5.72  3.19        3.52
+#> 4     2024  81.9  2.96     6.90  3.62        4.60
 ```
 
 ``` r
@@ -210,8 +228,17 @@ regional <- enr_regional %>%
   summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
 
 regional
-#> # A tibble: 0 × 3
-#> # ℹ 3 variables: end_year <int>, region <chr>, total <int>
+#> # A tibble: 8 × 3
+#>   end_year region        total
+#>      <int> <chr>         <dbl>
+#> 1     2016 North Country  4021
+#> 2     2016 Seacoast      16198
+#> 3     2018 North Country  3845
+#> 4     2018 Seacoast      15910
+#> 5     2021 North Country  3615
+#> 6     2021 Seacoast      15566
+#> 7     2024 North Country  3366
+#> 8     2024 Seacoast      15085
 ```
 
 ``` r
@@ -252,16 +279,16 @@ kindergarten %>%
     change = k_students - lag(k_students),
     pct_change = round(change / lag(k_students) * 100, 1)
   )
-#>   end_year k_students change pct_change
-#> 1     2016          0     NA         NA
-#> 2     2017          0      0        NaN
-#> 3     2018          0      0        NaN
-#> 4     2019          0      0        NaN
-#> 5     2020          0      0        NaN
-#> 6     2021          0      0        NaN
-#> 7     2022          0      0        NaN
-#> 8     2023          0      0        NaN
-#> 9     2024          0      0        NaN
+#>      end_year k_students change pct_change
+#> ...1     2016      12378     NA         NA
+#> ...2     2017      12270   -108       -0.9
+#> ...3     2018      12165   -105       -0.9
+#> ...4     2019      12069    -96       -0.8
+#> ...5     2020      11849   -220       -1.8
+#> ...6     2021      11923     74        0.6
+#> ...7     2022      11818   -105       -0.9
+#> ...8     2023      11733    -85       -0.7
+#> ...9     2024      11572   -161       -1.4
 ```
 
 ### 7. Grade-level enrollment reveals the student pipeline
@@ -286,52 +313,52 @@ grades <- enr_grades %>%
   ))
 
 grades
-#>    end_year grade_level n_students  grade_label
-#> 1      2016           K          0 Kindergarten
-#> 2      2016          01          0    1st Grade
-#> 3      2016          05          0    5th Grade
-#> 4      2016          09          0    9th Grade
-#> 5      2016          12          0   12th Grade
-#> 6      2017           K          0 Kindergarten
-#> 7      2017          01          0    1st Grade
-#> 8      2017          05          0    5th Grade
-#> 9      2017          09          0    9th Grade
-#> 10     2017          12          0   12th Grade
-#> 11     2018           K          0 Kindergarten
-#> 12     2018          01          0    1st Grade
-#> 13     2018          05          0    5th Grade
-#> 14     2018          09          0    9th Grade
-#> 15     2018          12          0   12th Grade
-#> 16     2019           K          0 Kindergarten
-#> 17     2019          01          0    1st Grade
-#> 18     2019          05          0    5th Grade
-#> 19     2019          09          0    9th Grade
-#> 20     2019          12          0   12th Grade
-#> 21     2020           K          0 Kindergarten
-#> 22     2020          01          0    1st Grade
-#> 23     2020          05          0    5th Grade
-#> 24     2020          09          0    9th Grade
-#> 25     2020          12          0   12th Grade
-#> 26     2021           K          0 Kindergarten
-#> 27     2021          01          0    1st Grade
-#> 28     2021          05          0    5th Grade
-#> 29     2021          09          0    9th Grade
-#> 30     2021          12          0   12th Grade
-#> 31     2022           K          0 Kindergarten
-#> 32     2022          01          0    1st Grade
-#> 33     2022          05          0    5th Grade
-#> 34     2022          09          0    9th Grade
-#> 35     2022          12          0   12th Grade
-#> 36     2023           K          0 Kindergarten
-#> 37     2023          01          0    1st Grade
-#> 38     2023          05          0    5th Grade
-#> 39     2023          09          0    9th Grade
-#> 40     2023          12          0   12th Grade
-#> 41     2024           K          0 Kindergarten
-#> 42     2024          01          0    1st Grade
-#> 43     2024          05          0    5th Grade
-#> 44     2024          09          0    9th Grade
-#> 45     2024          12          0   12th Grade
+#>       end_year grade_level n_students  grade_label
+#> ...1      2016           K      12378 Kindergarten
+#> ...2      2016          01      13106    1st Grade
+#> ...3      2016          05      13470    5th Grade
+#> ...4      2016          09      13833    9th Grade
+#> ...5      2016          12      12722   12th Grade
+#> ...6      2017           K      12270 Kindergarten
+#> ...7      2017          01      12993    1st Grade
+#> ...8      2017          05      13349    5th Grade
+#> ...9      2017          09      13714    9th Grade
+#> ...10     2017          12      12644   12th Grade
+#> ...11     2018           K      12165 Kindergarten
+#> ...12     2018          01      12881    1st Grade
+#> ...13     2018          05      13235    5th Grade
+#> ...14     2018          09      13594    9th Grade
+#> ...15     2018          12      12500   12th Grade
+#> ...16     2019           K      12069 Kindergarten
+#> ...17     2019          01      12777    1st Grade
+#> ...18     2019          05      13131    5th Grade
+#> ...19     2019          09      13487    9th Grade
+#> ...20     2019          12      12448   12th Grade
+#> ...21     2020           K      11849 Kindergarten
+#> ...22     2020          01      12544    1st Grade
+#> ...23     2020          05      12891    5th Grade
+#> ...24     2020          09      13239    9th Grade
+#> ...25     2020          12      12224   12th Grade
+#> ...26     2021           K      11923 Kindergarten
+#> ...27     2021          01      12620    1st Grade
+#> ...28     2021          05      12967    5th Grade
+#> ...29     2021          09      13317    9th Grade
+#> ...30     2021          12      12282   12th Grade
+#> ...31     2022           K      11818 Kindergarten
+#> ...32     2022          01      12522    1st Grade
+#> ...33     2022          05      12864    5th Grade
+#> ...34     2022          09      13212    9th Grade
+#> ...35     2022          12      12156   12th Grade
+#> ...36     2023           K      11733 Kindergarten
+#> ...37     2023          01      12425    1st Grade
+#> ...38     2023          05      12766    5th Grade
+#> ...39     2023          09      13107    9th Grade
+#> ...40     2023          12      12082   12th Grade
+#> ...41     2024           K      11572 Kindergarten
+#> ...42     2024          01      12258    1st Grade
+#> ...43     2024          05      12598    5th Grade
+#> ...44     2024          09      12937    9th Grade
+#> ...45     2024          12      11883   12th Grade
 ```
 
 ``` r
@@ -378,8 +405,11 @@ district_sizes <- enr_2024 %>%
                                          "Medium (1,000-2,999)", "Large (3,000+)")))
 
 district_sizes
-#> [1] size n   
-#> <0 rows> (or 0-length row.names)
+#>                   size  n
+#> 1       Large (3,000+) 14
+#> 2 Medium (1,000-2,999) 36
+#> 3      Small (300-999) 27
+#> 4          Tiny (<300)  3
 ```
 
 ``` r
@@ -418,8 +448,9 @@ tiny_districts <- enr_2024 %>%
   select(district_name, n_students)
 
 tiny_districts
-#> [1] district_name n_students   
-#> <0 rows> (or 0-length row.names)
+#>                                  district_name n_students
+#> grade_pk...1    Harts Location School District         19
+#> grade_pk...2 Waterville Valley School District         31
 ```
 
 ### 10. High school enrollment tracks the graduating pipeline
@@ -438,16 +469,16 @@ high_school <- enr %>%
 high_school
 #> # A tibble: 9 × 2
 #>   end_year hs_total
-#>      <int>    <int>
-#> 1     2016        0
-#> 2     2017        0
-#> 3     2018        0
-#> 4     2019        0
-#> 5     2020        0
-#> 6     2021        0
-#> 7     2022        0
-#> 8     2023        0
-#> 9     2024        0
+#>      <int>    <dbl>
+#> 1     2016    53131
+#> 2     2017    52700
+#> 3     2018    52210
+#> 4     2019    51843
+#> 5     2020    50898
+#> 6     2021    51186
+#> 7     2022    50754
+#> 8     2023    50380
+#> 9     2024    49676
 ```
 
 ### 11. Elementary outnumbers secondary – but by how much?
@@ -474,25 +505,25 @@ level_comparison <- enr %>%
 level_comparison
 #> # A tibble: 18 × 3
 #>    end_year level      students
-#>       <int> <chr>         <int>
-#>  1     2016 Elementary        0
-#>  2     2016 Secondary         0
-#>  3     2017 Elementary        0
-#>  4     2017 Secondary         0
-#>  5     2018 Elementary        0
-#>  6     2018 Secondary         0
-#>  7     2019 Elementary        0
-#>  8     2019 Secondary         0
-#>  9     2020 Elementary        0
-#> 10     2020 Secondary         0
-#> 11     2021 Elementary        0
-#> 12     2021 Secondary         0
-#> 13     2022 Elementary        0
-#> 14     2022 Secondary         0
-#> 15     2023 Elementary        0
-#> 16     2023 Secondary         0
-#> 17     2024 Elementary        0
-#> 18     2024 Secondary         0
+#>       <int> <chr>         <dbl>
+#>  1     2016 Elementary    78628
+#>  2     2016 Secondary     93541
+#>  3     2017 Elementary    77935
+#>  4     2017 Secondary     92747
+#>  5     2018 Elementary    77280
+#>  6     2018 Secondary     91915
+#>  7     2019 Elementary    76660
+#>  8     2019 Secondary     91236
+#>  9     2020 Elementary    75272
+#> 10     2020 Secondary     89571
+#> 11     2021 Elementary    75710
+#> 12     2021 Secondary     90087
+#> 13     2022 Elementary    75112
+#> 14     2022 Secondary     89346
+#> 15     2023 Elementary    74537
+#> 16     2023 Secondary     88678
+#> 17     2024 Elementary    73536
+#> 18     2024 Secondary     87470
 ```
 
 ### 12. Which districts are growing the fastest?
@@ -521,8 +552,19 @@ if (nrow(growth) > 0 && "y2024" %in% names(growth) && "y2016" %in% names(growth)
 }
 
 growth
-#> # A tibble: 0 × 1
-#> # ℹ 1 variable: district_name <chr>
+#> # A tibble: 10 × 5
+#>    district_name                                y2016 y2024 change pct_change
+#>    <chr>                                        <dbl> <dbl>  <dbl>      <dbl>
+#>  1 Bow School District                           1581  1870    289       18.3
+#>  2 Auburn School District                         603   686     83       13.8
+#>  3 Hollis Brookline Cooperative School District  2569  2743    174        6.8
+#>  4 Windham School District                       3826  3990    164        4.3
+#>  5 Bedford School District                       5021  5112     91        1.8
+#>  6 Amherst School District                       2205  2244     39        1.8
+#>  7 Hooksett School District                      2694  2743     49        1.8
+#>  8 New Boston Central School District             612   623     11        1.8
+#>  9 Stratham School District                       858   873     15        1.7
+#> 10 Brookline School District                      559   561      2        0.4
 ```
 
 ### 13. Middle grades (6-8) carry the demographic wave
@@ -541,16 +583,16 @@ middle_grades <- enr %>%
 middle_grades
 #> # A tibble: 9 × 2
 #>   end_year middle_total
-#>      <int>        <int>
-#> 1     2016            0
-#> 2     2017            0
-#> 3     2018            0
-#> 4     2019            0
-#> 5     2020            0
-#> 6     2021            0
-#> 7     2022            0
-#> 8     2023            0
-#> 9     2024            0
+#>      <int>        <dbl>
+#> 1     2016        40410
+#> 2     2017        40047
+#> 3     2018        39705
+#> 4     2019        39393
+#> 5     2020        38673
+#> 6     2021        38901
+#> 7     2022        38592
+#> 8     2023        38298
+#> 9     2024        37794
 ```
 
 ### 14. How many schools does each district operate?
@@ -574,9 +616,19 @@ school_counts %>%
   mutate(avg_school_size = round(district_enrollment / n_schools, 0)) %>%
   arrange(desc(n_schools)) %>%
   head(10)
-#> # A tibble: 0 × 4
-#> # ℹ 4 variables: district_name <chr>, n_schools <int>,
-#> #   district_enrollment <int>, avg_school_size <dbl>
+#> # A tibble: 10 × 4
+#>    district_name               n_schools district_enrollment avg_school_size
+#>    <chr>                           <int>               <dbl>           <dbl>
+#>  1 Manchester School District         21               14940             711
+#>  2 Nashua School District             17               13091             770
+#>  3 Concord School District            10                5610             561
+#>  4 Rochester School District           9                4364             485
+#>  5 Dover School District               7                4114             588
+#>  6 Salem School District               7                4738             677
+#>  7 Bedford School District             6                5112             852
+#>  8 Londonderry School District         6                5236             873
+#>  9 Hudson School District              5                3865             773
+#> 10 Keene School District               5                2743             549
 ```
 
 ### 15. Year-over-year enrollment changes reveal boom and bust cycles
@@ -596,16 +648,16 @@ state_changes <- enr %>%
   select(end_year, n_students, change, pct_change)
 
 state_changes
-#>   end_year n_students change pct_change
-#> 1     2016          0     NA         NA
-#> 2     2017          0      0        NaN
-#> 3     2018          0      0        NaN
-#> 4     2019          0      0        NaN
-#> 5     2020          0      0        NaN
-#> 6     2021          0      0        NaN
-#> 7     2022          0      0        NaN
-#> 8     2023          0      0        NaN
-#> 9     2024          0      0        NaN
+#>      end_year n_students change pct_change
+#> ...1     2016     176541     NA         NA
+#> ...2     2017     175012  -1529      -0.87
+#> ...3     2018     173489  -1523      -0.87
+#> ...4     2019     172156  -1333      -0.77
+#> ...5     2020     169027  -3129      -1.82
+#> ...6     2021     170005    978       0.58
+#> ...7     2022     168631  -1374      -0.81
+#> ...8     2023     167357  -1274      -0.76
+#> ...9     2024     165095  -2262      -1.35
 ```
 
 ## Session Info
@@ -639,13 +691,13 @@ sessionInfo()
 #>  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.2     tidyselect_1.2.1  
 #>  [5] jquerylib_0.1.4    systemfonts_1.3.1  scales_1.4.0       textshaping_1.0.4 
 #>  [9] yaml_2.3.12        fastmap_1.2.0      R6_2.6.1           labeling_0.4.3    
-#> [13] generics_0.1.4     curl_7.0.0         knitr_1.51         tibble_3.3.1      
-#> [17] desc_1.4.3         bslib_0.10.0       pillar_1.11.1      RColorBrewer_1.1-3
-#> [21] rlang_1.1.7        utf8_1.2.6         cachem_1.1.0       xfun_0.56         
-#> [25] S7_0.2.1           fs_1.6.6           sass_0.4.10        cli_3.6.5         
-#> [29] withr_3.0.2        pkgdown_2.2.0      magrittr_2.0.4     digest_0.6.39     
-#> [33] grid_4.5.2         rappdirs_0.3.4     lifecycle_1.0.5    vctrs_0.7.1       
-#> [37] evaluate_1.0.5     glue_1.8.0         farver_2.1.2       codetools_0.2-20  
-#> [41] ragg_1.5.0         httr_1.4.8         rmarkdown_2.30     purrr_1.2.1       
-#> [45] tools_4.5.2        pkgconfig_2.0.3    htmltools_0.5.9
+#> [13] generics_0.1.4     knitr_1.51         tibble_3.3.1       desc_1.4.3        
+#> [17] bslib_0.10.0       pillar_1.11.1      RColorBrewer_1.1-3 rlang_1.1.7       
+#> [21] utf8_1.2.6         cachem_1.1.0       xfun_0.56          S7_0.2.1          
+#> [25] fs_1.6.6           sass_0.4.10        cli_3.6.5          withr_3.0.2       
+#> [29] pkgdown_2.2.0      magrittr_2.0.4     digest_0.6.39      grid_4.5.2        
+#> [33] rappdirs_0.3.4     lifecycle_1.0.5    vctrs_0.7.1        evaluate_1.0.5    
+#> [37] glue_1.8.0         farver_2.1.2       codetools_0.2-20   ragg_1.5.0        
+#> [41] rmarkdown_2.30     purrr_1.2.1        tools_4.5.2        pkgconfig_2.0.3   
+#> [45] htmltools_0.5.9
 ```

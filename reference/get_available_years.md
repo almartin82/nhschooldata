@@ -29,9 +29,9 @@ get_available_years()
 #> [1] 2025
 #> 
 #> $source
-#> [1] "New Hampshire Department of Education iPlatform"
+#> [1] "New Hampshire Department of Education"
 #> 
 #> $note
-#> [1] "Data availability: 2015-2025. NH DOE iPlatform provides approximately 10 years of historical data. Enrollment is measured on October 1 of each school year. Access data at: https://my.doe.nh.gov/iPlatform"
+#> [1] "Data availability: 2015-2025. NH DOE enrollment data is collected on October 1 of each school year. Primary source: bundled data matching NH DOE published figures. Access raw reports at: https://my.doe.nh.gov/iPlatform"
 #> 
 ```
