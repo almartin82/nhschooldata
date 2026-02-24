@@ -39,15 +39,36 @@ get_raw_enr <- function(end_year) {
 
   validate_year(end_year)
 
+  # Try bundled data first (preferred - iPlatform requires browser access)
+  if (bundled_data_available(end_year)) {
+    message(paste("Loading bundled NH DOE enrollment data for", end_year, "..."))
+    bundled <- load_bundled_enr(end_year)
+    if (!is.null(bundled)) {
+      return(bundled)
+    }
+  }
+
   message(paste("Downloading NH DOE enrollment data for", end_year, "..."))
 
   # Download district-level enrollment data
   message("  Downloading district enrollment data...")
-  district_data <- download_nhdoe_district_enrollment(end_year)
+  district_data <- tryCatch(
+    download_nhdoe_district_enrollment(end_year),
+    error = function(e) {
+      warning("District download failed: ", e$message)
+      NULL
+    }
+  )
 
   # Download school-level enrollment data
   message("  Downloading school enrollment data...")
-  school_data <- download_nhdoe_school_enrollment(end_year)
+  school_data <- tryCatch(
+    download_nhdoe_school_enrollment(end_year),
+    error = function(e) {
+      warning("School download failed: ", e$message)
+      NULL
+    }
+  )
 
   # Add end_year column
   if (!is.null(district_data) && nrow(district_data) > 0) {
@@ -55,6 +76,19 @@ get_raw_enr <- function(end_year) {
   }
   if (!is.null(school_data) && nrow(school_data) > 0) {
     school_data$end_year <- end_year
+  }
+
+  # If download returned empty data, try bundled as final fallback
+  district_empty <- is.null(district_data) || nrow(district_data) == 0
+  school_empty <- is.null(school_data) || nrow(school_data) == 0
+
+  if (district_empty && school_empty) {
+    message("  Live download returned no data. Checking bundled data...")
+    bundled <- load_bundled_enr(end_year)
+    if (!is.null(bundled)) {
+      message("  Using bundled data for ", end_year)
+      return(bundled)
+    }
   }
 
   list(
