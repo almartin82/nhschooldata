@@ -20,6 +20,10 @@
 # Data is typically available for the current year plus several prior years.
 # Historical data availability varies by report type.
 #
+# STATUS: The iPlatform requires browser-based access. Live downloads
+# will fail until browser automation or an alternative source is set up.
+# Use import_local_enrollment() with manually downloaded files.
+#
 # ==============================================================================
 
 #' Download raw enrollment data from NH DOE
@@ -48,7 +52,9 @@ get_raw_enr <- function(end_year) {
     }
   }
 
-  message(paste("Downloading NH DOE enrollment data for", end_year, "..."))
+  message(paste("Attempting to download NH DOE enrollment data for", end_year, "..."))
+  message("  Note: NH DOE iPlatform requires browser-based access.")
+  message("  If download fails, use import_local_enrollment() with manually downloaded files.")
 
   # Download district-level enrollment data
   message("  Downloading district enrollment data...")
@@ -89,6 +95,10 @@ get_raw_enr <- function(end_year) {
       message("  Using bundled data for ", end_year)
       return(bundled)
     }
+    message("  No bundled data available for ", end_year, ".")
+    message("  This package is under construction. Download data manually from:")
+    message("  https://my.doe.nh.gov/iPlatform")
+    message("  Then use import_local_enrollment() to load it.")
   }
 
   list(
@@ -108,9 +118,7 @@ get_raw_enr <- function(end_year) {
 #' @keywords internal
 download_nhdoe_district_enrollment <- function(end_year) {
 
-
   # NH DOE iPlatform uses SSRS for reports
-
   # The District Fall Enrollment report path:
   # /BDMQ/iPlatform+Reports/Enrollment+Data/Enrollment+Reports/District+Fall+Enrollments
   #
@@ -119,13 +127,11 @@ download_nhdoe_district_enrollment <- function(end_year) {
   # - rs:Format=CSV for CSV format
   #
   # However, the iPlatform may require session cookies or have restrictions.
-  # We'll try multiple approaches.
 
   # Format school year for NH DOE (e.g., "2023-2024" for end_year 2024)
   school_year <- format_school_year(end_year)
 
   # Try the iPlatform report URL with Excel export
-  # Note: This may be blocked without proper session handling
   report_base <- "https://my.doe.nh.gov/iPlatform/Report/Report"
   report_path <- "/BDMQ/iPlatform+Reports/Enrollment+Data/Enrollment+Reports/District+Fall+Enrollments"
 
@@ -210,7 +216,6 @@ download_nhdoe_school_enrollment <- function(end_year) {
 download_iplatform_report <- function(report_base, report_path, end_year, level) {
 
   # Build the report URL
-  # iPlatform uses query parameters for report selection
   report_url <- paste0(
     report_base,
     "?path=", utils::URLencode(report_path, reserved = TRUE),
@@ -295,8 +300,6 @@ download_iplatform_report <- function(report_base, report_path, end_year, level)
 download_nhdoe_static_enrollment <- function(end_year, level) {
 
   # NH DOE sometimes publishes static Excel files
-  # Common patterns seen on education.nh.gov/sites/g/files/
-
   school_year_short <- paste0(
     substr(as.character(end_year - 1), 3, 4),
     substr(as.character(end_year), 3, 4)

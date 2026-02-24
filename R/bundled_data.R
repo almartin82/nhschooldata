@@ -3,17 +3,13 @@
 # ==============================================================================
 #
 # This file contains functions for loading bundled enrollment data.
-# The NH DOE iPlatform requires browser-based access, so we bundle
-# static data files that match published NH DOE figures.
+# The NH DOE iPlatform requires browser-based access, so bundled data
+# will be used when available.
 #
-# Data Sources:
-# - nh_enrollment_districts.rds: District-level enrollment 2015-2025
-# - nh_enrollment_schools.rds: School-level enrollment 2015-2025
-#
-# State totals match NH DOE press releases:
-# - "Student enrollment continues to slide in the Granite State" (2025)
-# - "New Hampshire adapts to changing student population" (2024)
-# - Reaching Higher NH analysis of NH DOE data (2022, 2023)
+# STATUS: No bundled data is currently available. The synthetic data that
+# was previously shipped has been removed. Once real data from the NH DOE
+# is manually downloaded and committed to inst/extdata/, these functions
+# will provide it.
 #
 # ==============================================================================
 
@@ -24,7 +20,7 @@
 #' requires browser-based downloads that cannot be automated.
 #'
 #' @param end_year School year end (2015-2025)
-#' @return List with school and district data frames
+#' @return List with school and district data frames, or NULL if not available
 #' @keywords internal
 load_bundled_enr <- function(end_year) {
 
