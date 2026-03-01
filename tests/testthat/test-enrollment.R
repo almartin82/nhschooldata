@@ -123,15 +123,73 @@ test_that("import_local_enrollment rejects unsupported file types", {
   unlink(temp_file)
 })
 
-test_that("bundled_data_available returns FALSE when no data exists", {
-  # With synthetic data removed, bundled data should not be available
-  expect_false(bundled_data_available(2024))
-  expect_false(bundled_data_available(2020))
+test_that("bundled_data_available returns TRUE for bundled years", {
+  expect_true(bundled_data_available(2024))
+  expect_true(bundled_data_available(2020))
+  expect_true(bundled_data_available(2012))
+  expect_true(bundled_data_available(2026))
+  expect_false(bundled_data_available(2011))
+  expect_false(bundled_data_available(2027))
 })
 
-test_that("get_bundled_years returns NULL when no data exists", {
+test_that("get_bundled_years returns expected range", {
   result <- get_bundled_years()
-  expect_null(result)
+  expect_true(!is.null(result))
+  expect_true(length(result) >= 15)
+  expect_true(2012 %in% result)
+  expect_true(2026 %in% result)
+})
+
+test_that("load_bundled_enr returns data for valid year", {
+  bundled <- load_bundled_enr(2025)
+  expect_true(!is.null(bundled))
+  expect_true(is.list(bundled))
+  expect_true("district" %in% names(bundled))
+  expect_true("school" %in% names(bundled))
+  expect_gt(nrow(bundled$district), 100)
+  expect_gt(nrow(bundled$school), 400)
+})
+
+test_that("fetch_enr returns tidy data with expected columns", {
+  enr <- fetch_enr(2025, use_cache = FALSE)
+  expect_gt(nrow(enr), 0)
+  expect_true("is_state" %in% names(enr))
+  expect_true("is_district" %in% names(enr))
+  expect_true("is_campus" %in% names(enr))
+  expect_true("subgroup" %in% names(enr))
+  expect_true("grade_level" %in% names(enr))
+  expect_true("n_students" %in% names(enr))
+
+  # State total should be reasonable (150K-200K)
+  state <- enr[enr$is_state & enr$subgroup == "total_enrollment" &
+                 enr$grade_level == "TOTAL", ]
+  expect_equal(nrow(state), 1)
+  expect_gt(state$n_students, 150000)
+  expect_lt(state$n_students, 200000)
+})
+
+test_that("no negative enrollment values", {
+  enr <- fetch_enr(2025, use_cache = FALSE)
+  numeric_cols <- names(enr)[sapply(enr, is.numeric)]
+  for (col in numeric_cols) {
+    vals <- enr[[col]]
+    vals <- vals[!is.na(vals)]
+    if (col == "n_students") {
+      expect_true(all(vals >= 0), info = paste("Non-negative", col))
+    }
+  }
+})
+
+test_that("no Inf or NaN in enrollment data", {
+  enr <- fetch_enr(2025, use_cache = FALSE)
+  numeric_cols <- names(enr)[sapply(enr, is.numeric)]
+  for (col in numeric_cols) {
+    vals <- enr[[col]]
+    expect_false(any(is.infinite(vals), na.rm = TRUE),
+                 info = paste("No Inf in", col))
+    expect_false(any(is.nan(vals), na.rm = TRUE),
+                 info = paste("No NaN in", col))
+  }
 })
 
 test_that("fetch_enr_multi validates year parameters", {

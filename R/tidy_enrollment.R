@@ -26,6 +26,7 @@ tidy_enr <- function(df) {
     "end_year", "type",
     "district_id", "campus_id",
     "district_name", "campus_name",
+    "sau", "sau_name",
     "county", "charter_flag"
   )
   invariants <- invariants[invariants %in% names(df)]
@@ -104,7 +105,11 @@ tidy_enr <- function(df) {
       "grade_09" = "09",
       "grade_10" = "10",
       "grade_11" = "11",
-      "grade_12" = "12"
+      "grade_12" = "12",
+      "grade_elem" = "ELEM",
+      "grade_middle" = "MIDDLE",
+      "grade_high" = "HIGH",
+      "grade_pg" = "PG"
     )
 
     tidy_grades <- purrr::map_df(
@@ -191,6 +196,7 @@ enr_grade_aggs <- function(df) {
     "end_year", "type",
     "district_id", "campus_id",
     "district_name", "campus_name",
+    "sau", "sau_name",
     "county", "charter_flag",
     "subgroup",
     "is_state", "is_district", "is_campus", "is_charter"

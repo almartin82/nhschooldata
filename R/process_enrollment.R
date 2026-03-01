@@ -421,7 +421,8 @@ create_state_aggregate <- function(district_df, end_year) {
     "grade_pk", "grade_k",
     "grade_01", "grade_02", "grade_03", "grade_04",
     "grade_05", "grade_06", "grade_07", "grade_08",
-    "grade_09", "grade_10", "grade_11", "grade_12"
+    "grade_09", "grade_10", "grade_11", "grade_12",
+    "grade_elem", "grade_middle", "grade_high", "grade_pg"
   )
 
   # Filter to columns that exist
@@ -435,6 +436,8 @@ create_state_aggregate <- function(district_df, end_year) {
     campus_id = NA_character_,
     district_name = NA_character_,
     campus_name = NA_character_,
+    sau = NA_character_,
+    sau_name = NA_character_,
     county = NA_character_,
     charter_flag = NA_character_,
     stringsAsFactors = FALSE

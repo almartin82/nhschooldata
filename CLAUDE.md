@@ -77,19 +77,14 @@ Before opening a PR, verify:
 
 ## Current Status
 
-**UNDER CONSTRUCTION**: No bundled data is available. Synthetic data that was previously
-shipped (using set.seed/runif) has been removed. The iPlatform requires browser-based
-access, which prevents automated downloads.
+**OPERATIONAL**: Bundled data covers 2012-2026 (15 school years). Data was
+downloaded from the NH DOE iPlatform using headed Playwright (Akamai WAF blocks
+headless HTTP). ~200 districts and ~500 schools per year.
 
-Users can:
-1. Visit the iPlatform directly:
-   - District enrollment: https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9
-   - School enrollment: https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10
-2. Download the Excel files manually
-3. Use `import_local_enrollment()` to load the data:
-   ```r
-   df <- import_local_enrollment("~/Downloads/district-fall-enrollment.xlsx", 2024, "district")
-   ```
+**Data limitations**: Standard iPlatform enrollment reports include grade-level
+totals only — no demographics (race/ethnicity, gender, FRL, SpEd, LEP).
+District reports have aggregated grades (Elementary/Middle/High), school reports
+have individual grades (PK, K, 1-12).
 
 ## Key Functions
 

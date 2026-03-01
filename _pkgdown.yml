@@ -39,6 +39,11 @@ reference:
     contents:
       - import_local_enrollment
 
+  - title: "Data"
+    desc: "Bundled datasets"
+    contents:
+      - nh_enrollment
+
   - title: "Package"
     contents:
       - nhschooldata-package

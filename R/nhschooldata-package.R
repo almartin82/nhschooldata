@@ -5,6 +5,12 @@
 ## usethis namespace: end
 NULL
 
+# Suppress NSE binding notes for dplyr variables
+utils::globalVariables(c(
+  "charter_flag", "grade_level", "n_students", "row_total",
+  "subgroup", "type"
+))
+
 #' nhschooldata: Fetch and Process New Hampshire School Enrollment Data
 #'
 #' An R package for downloading and processing school enrollment data for
@@ -56,6 +62,5 @@ NULL
 #' If automated download fails, you can manually download data from the
 #' NH DOE iPlatform and import it using \code{\link{import_local_enrollment}}.
 #'
-#' @docType package
 #' @name nhschooldata-package
 NULL
