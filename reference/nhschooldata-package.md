@@ -85,14 +85,6 @@ Useful links:
 
 - Report bugs at <https://github.com/almartin82/nhschooldata/issues>
 
-Useful links:
-
-- <https://almartin82.github.io/nhschooldata/>
-
-- <https://github.com/almartin82/nhschooldata>
-
-- Report bugs at <https://github.com/almartin82/nhschooldata/issues>
-
 ## Author
 
 **Maintainer**: Al Martin <almartin@example.com>

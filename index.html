@@ -56,63 +56,262 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>Fetch and analyze New Hampshire school enrollment data from the NH Department of Education in R or Python.</p>
-<p>Part of the <a href="https://github.com/almartin82?tab=repositories&amp;q=schooldata" class="external-link">state schooldata project</a>, inspired by <a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a>.</p>
+<p>New Hampshire’s public schools enrolled 160,322 students in 2025-26 — down 16% from 190,805 in 2011-12. This package provides 15 years of enrollment data from the NH Department of Education, covering ~200 districts and ~500 schools.</p>
+<p>Part of the <a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a> family.</p>
+<p><strong><a href="https://almartin82.github.io/nhschooldata/">Full documentation</a></strong> — all 15 stories with interactive charts, getting-started guide, and complete function reference.</p>
 <div class="section level2">
-<h2 id="status-under-construction">Status: Under Construction<a class="anchor" aria-label="anchor" href="#status-under-construction"></a>
+<h2 id="highlights">Highlights<a class="anchor" aria-label="anchor" href="#highlights"></a>
 </h2>
-<p>This package’s data pipeline is <strong>not yet functional</strong>. The NH DOE <a href="https://my.doe.nh.gov/iPlatform" class="external-link">iPlatform</a> requires browser-based authentication, which prevents automated data downloads. The package infrastructure (fetching, processing, tidying) is built and ready, but <strong>no real enrollment data is currently bundled</strong>.</p>
-<p>Previously, this package shipped synthetic data generated with <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> / <code><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif()</a></code>. That data has been removed because every number in a schooldata package must trace back to a real state DOE source.</p>
 <div class="section level3">
-<h3 id="what-is-being-investigated">What is being investigated<a class="anchor" aria-label="anchor" href="#what-is-being-investigated"></a>
+<h3 id="id_1-nh-lost-30000-students-since-2012">1. NH lost 30,000 students since 2012<a class="anchor" aria-label="anchor" href="#id_1-nh-lost-30000-students-since-2012"></a>
 </h3>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Manual download + bundle</strong> – download enrollment files from iPlatform by hand and commit them to <code>inst/extdata/</code>
-</li>
-<li>
-<strong>Browser automation</strong> – use RSelenium or Playwright to script iPlatform downloads</li>
-<li>
-<strong>Alternative state source</strong> – if NH DOE publishes data in another format</li>
-</ol>
-</div>
-<div class="section level3">
-<h3 id="manual-data-access-available-now">Manual data access (available now)<a class="anchor" aria-label="anchor" href="#manual-data-access-available-now"></a>
-</h3>
-<p>You can download data directly from the NH DOE:</p>
-<ul>
-<li>
-<strong>District enrollment</strong>: <a href="https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9" class="external-link uri">https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9</a>
-</li>
-<li>
-<strong>School enrollment</strong>: <a href="https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10" class="external-link uri">https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10</a>
-</li>
-</ul>
-<p>Then import locally:</p>
+<p>State enrollment fell from 190,805 to 160,322 — a 16% decline driven by demographic contraction in one of America’s oldest-population states.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://almartin82.github.io/nhschooldata/">nhschooldata</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/import_local_enrollment.html">import_local_enrollment</a></span><span class="op">(</span></span>
-<span>  <span class="st">"~/Downloads/district-fall-enrollment.xlsx"</span>,</span>
-<span>  end_year <span class="op">=</span> <span class="fl">2024</span>,</span>
-<span>  level <span class="op">=</span> <span class="st">"district"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">enr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fl">2012</span><span class="op">:</span><span class="fl">2026</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">state_trend</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">state_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">state_trend</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    change <span class="op">=</span> <span class="va">n_students</span> <span class="op">-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span>,</span>
+<span>    cumulative_change <span class="op">=</span> <span class="va">n_students</span> <span class="op">-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nth.html" class="external-link">first</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 15 × 4</span></span>
+<span><span class="co">#&gt;    end_year n_students change cumulative_change</span></span>
+<span><span class="co">#&gt;       &lt;int&gt;      &lt;int&gt;  &lt;int&gt;             &lt;int&gt;</span></span>
+<span><span class="co">#&gt;  1     2012     190805     NA                 0</span></span>
+<span><span class="co">#&gt;  2     2013     187962  -2843             -2843</span></span>
+<span><span class="co">#&gt;  3     2014     185320  -2642             -5485</span></span>
+<span><span class="co">#&gt;  4     2015     183604  -1716             -7201</span></span>
+<span><span class="co">#&gt;  5     2016     181339  -2265             -9466</span></span>
+<span><span class="co">#&gt;  6     2017     179734  -1605            -11071</span></span>
+<span><span class="co">#&gt;  7     2018     178328  -1406            -12477</span></span>
+<span><span class="co">#&gt;  8     2019     177365   -963            -13440</span></span>
+<span><span class="co">#&gt;  9     2020     176168  -1197            -14637</span></span>
+<span><span class="co">#&gt; 10     2021     167909  -8259            -22896</span></span>
+<span><span class="co">#&gt; 11     2022     168620    711            -22185</span></span>
+<span><span class="co">#&gt; 12     2023     167357  -1263            -23448</span></span>
+<span><span class="co">#&gt; 13     2024     165082  -2275            -25723</span></span>
+<span><span class="co">#&gt; 14     2025     162660  -2422            -28145</span></span>
+<span><span class="co">#&gt; 15     2026     160322  -2338            -30483</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/state-trend-chart-1.png" alt="State enrollment trend"><div class="figcaption">State enrollment trend</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#nh-lost-30000-students-since-2012">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_2-charter-schools-grew-from-06-to-39-of-enrollment">2. Charter schools grew from 0.6% to 3.9% of enrollment<a class="anchor" aria-label="anchor" href="#id_2-charter-schools-grew-from-06-to-39-of-enrollment"></a>
+</h3>
+<p>While total enrollment shrank, charter schools quintupled their share — from 9 charters with 1,090 students in 2012 to 35 charters with 6,242 in 2026.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">charter_names</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">end_year</span> <span class="op">==</span> <span class="fl">2026</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Charter|Chartered"</span>, <span class="va">district_name</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">district_name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">charter_trend</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">district_name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">charter_names</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
+<span>    n_charter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    n_charters <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">state_total</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, state_total <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">charter_pct</span> <span class="op">&lt;-</span> <span class="va">charter_trend</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">state_total</span>, by <span class="op">=</span> <span class="st">"end_year"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">n_charter</span> <span class="op">/</span> <span class="va">state_total</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">charter_pct</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">charter_pct</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 15 × 5</span></span>
+<span><span class="co">#&gt;    end_year n_charter n_charters state_total   pct</span></span>
+<span><span class="co">#&gt;       &lt;int&gt;     &lt;int&gt;      &lt;int&gt;       &lt;int&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1     2012      1090          9      190805   0.6</span></span>
+<span><span class="co">#&gt;  2     2013      1640         14      187962   0.9</span></span>
+<span><span class="co">#&gt;  3     2014      1978         15      185320   1.1</span></span>
+<span><span class="co">#&gt;  4     2015      2426         19      183604   1.3</span></span>
+<span><span class="co">#&gt;  5     2016      2890         21      181339   1.6</span></span>
+<span><span class="co">#&gt;  6     2017      3297         21      179734   1.8</span></span>
+<span><span class="co">#&gt;  7     2018      3421         21      178328   1.9</span></span>
+<span><span class="co">#&gt;  8     2019      3752         23      177365   2.1</span></span>
+<span><span class="co">#&gt;  9     2020      3993         23      176168   2.3</span></span>
+<span><span class="co">#&gt; 10     2021      4336         24      167909   2.6</span></span>
+<span><span class="co">#&gt; 11     2022      4756         25      168620   2.8</span></span>
+<span><span class="co">#&gt; 12     2023      5211         27      167357   3.1</span></span>
+<span><span class="co">#&gt; 13     2024      5460         29      165082   3.3</span></span>
+<span><span class="co">#&gt; 14     2025      5938         31      162660   3.7</span></span>
+<span><span class="co">#&gt; 15     2026      6242         35      160322   3.9</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/charter-chart-1.png" alt="Charter school growth"><div class="figcaption">Charter school growth</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#charter-schools-grew-from-06-to-39-of-enrollment">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_3-covid-erased-8259-students-in-a-single-year">3. COVID erased 8,259 students in a single year<a class="anchor" aria-label="anchor" href="#id_3-covid-erased-8259-students-in-a-single-year"></a>
+</h3>
+<p>The 2020-21 school year saw a 4.7% enrollment drop — by far the largest single-year decline in the dataset. NH has not recovered.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">end_year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">2019</span><span class="op">:</span><span class="fl">2022</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    yoy_change <span class="op">=</span> <span class="va">n_students</span> <span class="op">-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span>,</span>
+<span>    yoy_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">n_students</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">covid</span><span class="op">)</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">covid</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 4 × 4</span></span>
+<span><span class="co">#&gt;   end_year n_students yoy_change yoy_pct</span></span>
+<span><span class="co">#&gt;      &lt;int&gt;      &lt;int&gt;      &lt;int&gt;   &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2019     177365         NA    NA</span></span>
+<span><span class="co">#&gt; 2     2020     176168      -1197    -0.7</span></span>
+<span><span class="co">#&gt; 3     2021     167909      -8259    -4.7</span></span>
+<span><span class="co">#&gt; 4     2022     168620        711     0.4</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/covid-chart-1.png" alt="Year-over-year change"><div class="figcaption">Year-over-year change</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#covid-erased-8259-students-in-a-single-year">(source)</a></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h2 id="data-taxonomy">Data Taxonomy<a class="anchor" aria-label="anchor" href="#data-taxonomy"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="27%">
+<col width="19%">
+<col width="27%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th>Category</th>
+<th>Years</th>
+<th>Function</th>
+<th>Details</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>Enrollment</strong></td>
+<td>2012-2026</td>
+<td>
+<code><a href="reference/fetch_enr.html">fetch_enr()</a></code> / <code><a href="reference/fetch_enr_multi.html">fetch_enr_multi()</a></code>
+</td>
+<td>State, district, school. Grade-level totals</td>
+</tr>
+<tr class="even">
+<td>Assessments</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="odd">
+<td>Graduation</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="even">
+<td>Directory</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="odd">
+<td>Per-Pupil Spending</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="even">
+<td>Accountability</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="odd">
+<td>Chronic Absence</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="even">
+<td>EL Progress</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="odd">
+<td>Special Ed</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>See the full <a href="../docs/DATA-CATEGORY-TAXONOMY.html">data category taxonomy</a></p>
+</blockquote>
+</div>
+<div class="section level2">
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <div class="section level3">
 <h3 id="r">R<a class="anchor" aria-label="anchor" href="#r"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"almartin82/nhschooldata"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"almartin82/nhschooldata"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://almartin82.github.io/nhschooldata/">nhschooldata</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Fetch enrollment for 2025-26</span></span>
+<span><span class="va">enr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># State total</span></span>
+<span><span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Top 5 districts</span></span>
+<span><span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="python">Python<a class="anchor" aria-label="anchor" href="#python"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/almartin82/nhschooldata.git#subdirectory=pynhschooldata</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/almartin82/nhschooldata.git#subdirectory=pynhschooldata</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="im">from</span> pynhschooldata <span class="im">import</span> fetch_enr</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>enr <span class="op">=</span> fetch_enr(<span class="dv">2026</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="bu">print</span>(enr.head())</span></code></pre></div>
 </div>
+</div>
+<div class="section level2">
+<h2 id="explore-more">Explore More<a class="anchor" aria-label="anchor" href="#explore-more"></a>
+</h2>
+<p>Full analysis with 15 stories: - <a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html">Enrollment trends</a> — 15 stories covering state trends, district deep dives, grade-level patterns, and structural analysis - <a href="https://almartin82.github.io/nhschooldata/reference/">Function reference</a></p>
 </div>
 <div class="section level2">
 <h2 id="data-notes">Data Notes<a class="anchor" aria-label="anchor" href="#data-notes"></a>
@@ -132,47 +331,440 @@
 <td><a href="https://my.doe.nh.gov/iPlatform" class="external-link">NH DOE iPlatform</a></td>
 </tr>
 <tr class="even">
-<td><strong>Entity types</strong></td>
-<td>~162 districts (organized into SAUs), ~456 schools</td>
+<td><strong>Years</strong></td>
+<td>2012-2026 (15 school years)</td>
 </tr>
 <tr class="odd">
+<td><strong>Entity types</strong></td>
+<td>~200 districts (organized into SAUs), ~500 schools</td>
+</tr>
+<tr class="even">
 <td><strong>Census day</strong></td>
 <td>October 1 of each school year</td>
 </tr>
-<tr class="even">
-<td><strong>Known limitation</strong></td>
-<td>iPlatform requires browser-based access; automated downloads do not work</td>
-</tr>
 <tr class="odd">
+<td><strong>Demographics</strong></td>
+<td>Not available in standard enrollment reports (grade totals only)</td>
+</tr>
+<tr class="even">
 <td><strong>Suppression</strong></td>
 <td>Counts &lt; 10 may be suppressed with <code>*</code>
 </td>
+</tr>
+<tr class="odd">
+<td><strong>Download method</strong></td>
+<td>Headed Playwright (Akamai WAF blocks headless HTTP)</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section level2">
-<h2 id="api-overview">API Overview<a class="anchor" aria-label="anchor" href="#api-overview"></a>
+<h2 id="deeper-dive">Deeper Dive<a class="anchor" aria-label="anchor" href="#deeper-dive"></a>
 </h2>
-<p>The package API is ready – it just needs real data behind it.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://almartin82.github.io/nhschooldata/">nhschooldata</a></span><span class="op">)</span></span>
+<div class="section level3">
+<h3 id="id_4-manchester-lost-nearly-a-quarter-of-its-students">4. Manchester lost nearly a quarter of its students<a class="anchor" aria-label="anchor" href="#id_4-manchester-lost-nearly-a-quarter-of-its-students"></a>
+</h3>
+<p>New Hampshire’s largest city saw enrollment drop from 15,536 to 11,712 — a loss of 3,824 students (24.6%) while maintaining 20 schools.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">big2</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">district_name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Manchester"</span>, <span class="st">"Nashua"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Check what years are available</span></span>
-<span><span class="fu"><a href="reference/get_available_years.html">get_available_years</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">big2</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">big2</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">end_year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2012</span>, <span class="fl">2018</span>, <span class="fl">2026</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">district_name</span>, values_from <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 3 × 3</span></span>
+<span><span class="co">#&gt;   end_year Manchester Nashua</span></span>
+<span><span class="co">#&gt;      &lt;int&gt;      &lt;int&gt;  &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1     2012      15536  11894</span></span>
+<span><span class="co">#&gt; 2     2018      13477  10598</span></span>
+<span><span class="co">#&gt; 3     2026      11712   9501</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/manchester-nashua-chart-1.png" alt="Manchester vs Nashua"><div class="figcaption">Manchester vs Nashua</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#manchester-lost-nearly-a-quarter-of-its-students">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_5-errol-has-12-students--the-states-tiniest-district">5. Errol has 12 students — the state’s tiniest district<a class="anchor" aria-label="anchor" href="#id_5-errol-has-12-students--the-states-tiniest-district"></a>
+</h3>
+<p>New Hampshire has dozens of districts with fewer than 100 students. The smallest, Errol, has just 12 — smaller than most college seminar classes.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">smallest</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">end_year</span> <span class="op">==</span> <span class="fl">2026</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">sau</span>, <span class="va">sau_name</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Fetch enrollment (will attempt live download, then bundled data)</span></span>
-<span><span class="va">enr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">smallest</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">smallest</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 10 × 4</span></span>
+<span><span class="co">#&gt;    district_name                                     sau   sau_name  n_students</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;                                             &lt;chr&gt; &lt;chr&gt;          &lt;int&gt;</span></span>
+<span><span class="co">#&gt;  1 Errol                                             20    Gorham            12</span></span>
+<span><span class="co">#&gt;  2 Landaff                                           35    SAU #35…         15</span></span>
+<span><span class="co">#&gt;  3 North Star Academy Chartered Public School        406   North S…         17</span></span>
+<span><span class="co">#&gt;  4 Jackson                                           9     Conway           26</span></span>
+<span><span class="co">#&gt;  5 Croydon                                           99    Croydon          28</span></span>
+<span><span class="co">#&gt;  6 Stark                                             58    Groveton         30</span></span>
+<span><span class="co">#&gt;  7 Marlow                                            29    Keene            32</span></span>
+<span><span class="co">#&gt;  8 CSI Charter School                                410   CSI Cha…         32</span></span>
+<span><span class="co">#&gt;  9 NH Career Academy Chartered Public School         421   NH Care…         32</span></span>
+<span><span class="co">#&gt; 10 Waterville Valley                                 48    Plymouth         34</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/smallest-chart-1.png" alt="Smallest districts"><div class="figcaption">Smallest districts</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#errol-has-12-students-the-states-tiniest-district">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_6-virtual-learning-academy-grew-756--the-biggest-gainer">6. Virtual Learning Academy grew 756% — the biggest gainer<a class="anchor" aria-label="anchor" href="#id_6-virtual-learning-academy-grew-756--the-biggest-gainer"></a>
+</h3>
+<p>While most districts shrank, Virtual Learning Academy Charter School grew from 63 students in 2012 to 539 in 2026 — a 756% increase.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">changes</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">end_year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2012</span>, <span class="fl">2026</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">end_year</span>, values_from <span class="op">=</span> <span class="va">n_students</span>,</span>
+<span>              names_prefix <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">y2012</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">y2026</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    change <span class="op">=</span> <span class="va">y2026</span> <span class="op">-</span> <span class="va">y2012</span>,</span>
+<span>    pct_change <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">y2026</span> <span class="op">/</span> <span class="va">y2012</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Multi-year fetch</span></span>
-<span><span class="va">enr_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fl">2020</span><span class="op">:</span><span class="fl">2024</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">changes</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Top 5 gainers:\n"</span><span class="op">)</span></span>
+<span><span class="va">changes</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">pct_change</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Top 5 gainers:</span></span>
+<span><span class="co">#&gt; # A tibble: 5 × 5</span></span>
+<span><span class="co">#&gt;   district_name                                     y2012 y2026 change pct_change</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                                             &lt;int&gt; &lt;int&gt;  &lt;int&gt;      &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Virtual Learning Academy Charter School              63   539    476      755.6</span></span>
+<span><span class="co">#&gt; 2 Academy for Science and Design Charter School       285   671    386      135.4</span></span>
+<span><span class="co">#&gt; 3 Strong Foundations Charter School                   172   336    164       95.3</span></span>
+<span><span class="co">#&gt; 4 Gate City Charter School For the Arts               106   203     97       91.5</span></span>
+<span><span class="co">#&gt; 5 Making Community Connections Charter School          97   171     74       76.3</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/gainers-chart-1.png" alt="Biggest gainers"><div class="figcaption">Biggest gainers</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#virtual-learning-academy-grew-756-the-biggest-gainer">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_7-top-5-losers-account-for-9481-lost-students">7. Top 5 losers account for 9,481 lost students<a class="anchor" aria-label="anchor" href="#id_7-top-5-losers-account-for-9481-lost-students"></a>
+</h3>
+<p>The five largest districts — Manchester, Nashua, Hudson, Concord, and Londonderry — together lost 9,481 students, nearly a third of the statewide decline.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">top_losers</span> <span class="op">&lt;-</span> <span class="va">changes</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">change</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Import a manually downloaded file</span></span>
-<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/import_local_enrollment.html">import_local_enrollment</a></span><span class="op">(</span><span class="st">"path/to/file.xlsx"</span>, <span class="fl">2024</span>, <span class="st">"district"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">top_losers</span><span class="op">)</span> <span class="op">==</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">top_losers</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 5 × 5</span></span>
+<span><span class="co">#&gt;   district_name y2012 y2026 change pct_change</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;         &lt;int&gt; &lt;int&gt;  &lt;int&gt;      &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Manchester    15536 11712  -3824      -24.6</span></span>
+<span><span class="co">#&gt; 2 Nashua        11894  9501  -2393      -20.1</span></span>
+<span><span class="co">#&gt; 3 Hudson         4052  2875  -1177      -29.0</span></span>
+<span><span class="co">#&gt; 4 Concord        4842  3755  -1087      -22.4</span></span>
+<span><span class="co">#&gt; 5 Londonderry    4847  3847  -1000      -20.6</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/losers-chart-1.png" alt="Top losers trend"><div class="figcaption">Top losers trend</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#top-5-losers-account-for-9481-lost-students">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_8-grade-12-consistently-outnumbers-grade-1">8. Grade 12 consistently outnumbers Grade 1<a class="anchor" aria-label="anchor" href="#id_8-grade-12-consistently-outnumbers-grade-1"></a>
+</h3>
+<p>Every year since 2012, more students graduate from 12th grade than enter 1st grade — a demographic signature of sustained population decline.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_campus</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>,</span>
+<span>         <span class="va">grade_level</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"12"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">grade_level</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">grade_level</span>, values_from <span class="op">=</span> <span class="va">n</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>grade_01 <span class="op">=</span> <span class="va">`01`</span>, grade_12 <span class="op">=</span> <span class="va">`12`</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ratio <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">grade_12</span> <span class="op">/</span> <span class="va">grade_01</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Cache management</span></span>
-<span><span class="fu"><a href="reference/cache_status.html">cache_status</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/clear_cache.html">clear_cache</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pipeline</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">pipeline</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 15 × 4</span></span>
+<span><span class="co">#&gt;    end_year grade_01 grade_12 ratio</span></span>
+<span><span class="co">#&gt;       &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1     2012    13595    14673  1.08</span></span>
+<span><span class="co">#&gt;  2     2013    13609    14404  1.06</span></span>
+<span><span class="co">#&gt;  3     2014    13461    13962  1.04</span></span>
+<span><span class="co">#&gt;  4     2015    13157    13671  1.04</span></span>
+<span><span class="co">#&gt;  5     2016    12898    13752  1.07</span></span>
+<span><span class="co">#&gt;  6     2017    12377    13338  1.08</span></span>
+<span><span class="co">#&gt;  7     2018    12678    13235  1.04</span></span>
+<span><span class="co">#&gt;  8     2019    12351    13080  1.06</span></span>
+<span><span class="co">#&gt;  9     2020    12501    13172  1.05</span></span>
+<span><span class="co">#&gt; 10     2021    11675    13114  1.12</span></span>
+<span><span class="co">#&gt; 11     2022    11754    12867  1.09</span></span>
+<span><span class="co">#&gt; 12     2023    12099    12471  1.03</span></span>
+<span><span class="co">#&gt; 13     2024    11687    12502  1.07</span></span>
+<span><span class="co">#&gt; 14     2025    11278    12493  1.11</span></span>
+<span><span class="co">#&gt; 15     2026    11169    12388  1.11</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/pipeline-chart-1.png" alt="Pipeline ratio"><div class="figcaption">Pipeline ratio</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#grade-12-consistently-outnumbers-grade-1">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_9-prek-enrollment-grew-39-while-everything-else-shrank">9. PreK enrollment grew 39% while everything else shrank<a class="anchor" aria-label="anchor" href="#id_9-prek-enrollment-grew-39-while-everything-else-shrank"></a>
+</h3>
+<p>PreK enrollment rose from 3,165 to 4,395 — a 39% increase — even as overall enrollment fell 16%.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">prek</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"PK"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">prek</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">prek</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 15 × 2</span></span>
+<span><span class="co">#&gt;    end_year n_students</span></span>
+<span><span class="co">#&gt;       &lt;int&gt;      &lt;int&gt;</span></span>
+<span><span class="co">#&gt;  1     2012       3165</span></span>
+<span><span class="co">#&gt;  2     2013       3200</span></span>
+<span><span class="co">#&gt;  3     2014       3401</span></span>
+<span><span class="co">#&gt;  4     2015       3557</span></span>
+<span><span class="co">#&gt;  5     2016       3670</span></span>
+<span><span class="co">#&gt;  6     2017       3894</span></span>
+<span><span class="co">#&gt;  7     2018       3876</span></span>
+<span><span class="co">#&gt;  8     2019       4192</span></span>
+<span><span class="co">#&gt;  9     2020       4518</span></span>
+<span><span class="co">#&gt; 10     2021       2908</span></span>
+<span><span class="co">#&gt; 11     2022       3848</span></span>
+<span><span class="co">#&gt; 12     2023       4385</span></span>
+<span><span class="co">#&gt; 13     2024       4440</span></span>
+<span><span class="co">#&gt; 14     2025       4385</span></span>
+<span><span class="co">#&gt; 15     2026       4395</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/prek-chart-1.png" alt="PreK trend"><div class="figcaption">PreK trend</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#prek-enrollment-grew-39-while-everything-else-shrank">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_10-kindergarten-lost-1177-students-since-2012">10. Kindergarten lost 1,177 students since 2012<a class="anchor" aria-label="anchor" href="#id_10-kindergarten-lost-1177-students-since-2012"></a>
+</h3>
+<p>Kindergarten enrollment dropped from 11,904 to 10,727 — a 10% decline that signals continued enrollment losses ahead.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">k_trend</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_campus</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"K"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>n_students <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">k_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">k_trend</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 15 × 2</span></span>
+<span><span class="co">#&gt;    end_year n_students</span></span>
+<span><span class="co">#&gt;       &lt;int&gt;      &lt;int&gt;</span></span>
+<span><span class="co">#&gt;  1     2012      11904</span></span>
+<span><span class="co">#&gt;  2     2013      11888</span></span>
+<span><span class="co">#&gt;  3     2014      11602</span></span>
+<span><span class="co">#&gt;  4     2015      11570</span></span>
+<span><span class="co">#&gt;  5     2016      11187</span></span>
+<span><span class="co">#&gt;  6     2017      11422</span></span>
+<span><span class="co">#&gt;  7     2018      11415</span></span>
+<span><span class="co">#&gt;  8     2019      11691</span></span>
+<span><span class="co">#&gt;  9     2020      11689</span></span>
+<span><span class="co">#&gt; 10     2021      10111</span></span>
+<span><span class="co">#&gt; 11     2022      11212</span></span>
+<span><span class="co">#&gt; 12     2023      11074</span></span>
+<span><span class="co">#&gt; 13     2024      10893</span></span>
+<span><span class="co">#&gt; 14     2025      10871</span></span>
+<span><span class="co">#&gt; 15     2026      10727</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/kindergarten-chart-1.png" alt="Kindergarten trend"><div class="figcaption">Kindergarten trend</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#kindergarten-lost-1177-students-since-2012">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_11-111-one-school-districts-vs-manchesters-20">11. 111 one-school districts vs Manchester’s 20<a class="anchor" aria-label="anchor" href="#id_11-111-one-school-districts-vs-manchesters-20"></a>
+</h3>
+<p>Over half of NH’s districts have just one school. Meanwhile Manchester operates 20 — nearly as many as the bottom 40 districts combined.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">schools_per</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_campus</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">end_year</span> <span class="op">==</span> <span class="fl">2026</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">district_name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>n_schools <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">n_schools</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">schools_per</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Districts by school count:\n"</span><span class="op">)</span></span>
+<span><span class="va">schools_per</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>category <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="va">n_schools</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"1 school"</span>,</span>
+<span>    <span class="va">n_schools</span> <span class="op">&lt;=</span> <span class="fl">3</span> <span class="op">~</span> <span class="st">"2-3 schools"</span>,</span>
+<span>    <span class="va">n_schools</span> <span class="op">&lt;=</span> <span class="fl">10</span> <span class="op">~</span> <span class="st">"4-10 schools"</span>,</span>
+<span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"11+ schools"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">category</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Districts by school count:</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span><span class="co">#&gt;   category        n</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;       &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 1 school      111</span></span>
+<span><span class="co">#&gt; 2 11+ schools     5</span></span>
+<span><span class="co">#&gt; 3 2-3 schools    46</span></span>
+<span><span class="co">#&gt; 4 4-10 schools   41</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/school-counts-chart-1.png" alt="School counts"><div class="figcaption">School counts</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#one-school-districts-vs-manchesters-20">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_12-the-sau-system-one-administrator-multiple-districts">12. The SAU system: one administrator, multiple districts<a class="anchor" aria-label="anchor" href="#id_12-the-sau-system-one-administrator-multiple-districts"></a>
+</h3>
+<p>New Hampshire’s School Administrative Units (SAUs) are a unique feature. Plymouth SAU #48 covers 8 districts, allowing tiny towns to share administrative costs.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sau_multi</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">end_year</span> <span class="op">==</span> <span class="fl">2026</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">sau</span>, <span class="va">sau_name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
+<span>    n_districts <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    total_students <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    districts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">district_name</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>,</span>
+<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">n_districts</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sau_multi</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">sau_multi</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 8 × 5</span></span>
+<span><span class="co">#&gt;   sau   sau_name              n_districts total_students districts</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;                       &lt;int&gt;          &lt;int&gt; &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1 48    Plymouth                        8           1753 Ashland, Campton, …</span></span>
+<span><span class="co">#&gt; 2 16    Exeter                          7           4147 Brentwood, East Ki…</span></span>
+<span><span class="co">#&gt; 3 29    Keene                           7           3583 Chesterfield, Keene…</span></span>
+<span><span class="co">#&gt; 4 21    Winnacunnet                     5           2044 Hampton, Hampton F…</span></span>
+<span><span class="co">#&gt; 5 35    SAU #35 Office                  5            726 Bethlehem, Landaff…</span></span>
+<span><span class="co">#&gt; 6 53    Pembroke                        5           2695 Allenstown, Chiches…</span></span>
+<span><span class="co">#&gt; 7 23    Haverhill Cooperative           4            771 Bath, Benton, Haver…</span></span>
+<span><span class="co">#&gt; 8 24    Henniker                        4           1869 Henniker, John Star…</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/sau-chart-1.png" alt="SAU system"><div class="figcaption">SAU system</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#the-sau-system-one-administrator-multiple-districts">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_13-north-country-lost-26-of-its-students">13. North Country lost 26% of its students<a class="anchor" aria-label="anchor" href="#id_13-north-country-lost-26-of-its-students"></a>
+</h3>
+<p>The remote northern districts (Coos County area) saw enrollment drop from 2,526 to 1,859 — a 26% decline, steeper than the statewide average.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">north_country</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Berlin"</span>, <span class="st">"Gorham"</span>, <span class="st">"Milan"</span>, <span class="st">"Errol"</span>, <span class="st">"Pittsburg"</span>,</span>
+<span>                    <span class="st">"Colebrook"</span>, <span class="st">"Stark"</span>, <span class="st">"Stratford"</span>, <span class="st">"Stewartstown"</span>,</span>
+<span>                    <span class="st">"Northumberland"</span>, <span class="st">"Lancaster"</span>, <span class="st">"Whitefield"</span>, <span class="st">"Dalton"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">nc_trend</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">district_name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">north_country</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
+<span>    n_students <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    n_districts <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">nc_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">nc_trend</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 15 × 3</span></span>
+<span><span class="co">#&gt;    end_year n_students n_districts</span></span>
+<span><span class="co">#&gt;       &lt;int&gt;      &lt;int&gt;       &lt;int&gt;</span></span>
+<span><span class="co">#&gt;  1     2012       2526           9</span></span>
+<span><span class="co">#&gt;  2     2013       2481           9</span></span>
+<span><span class="co">#&gt;  3     2014       2440           9</span></span>
+<span><span class="co">#&gt;  4     2015       2360           9</span></span>
+<span><span class="co">#&gt;  5     2016       2299           9</span></span>
+<span><span class="co">#&gt;  6     2017       2282           9</span></span>
+<span><span class="co">#&gt;  7     2018       2212           9</span></span>
+<span><span class="co">#&gt;  8     2019       2102           9</span></span>
+<span><span class="co">#&gt;  9     2020       2085           9</span></span>
+<span><span class="co">#&gt; 10     2021       1999           9</span></span>
+<span><span class="co">#&gt; 11     2022       1984           9</span></span>
+<span><span class="co">#&gt; 12     2023       1977           9</span></span>
+<span><span class="co">#&gt; 13     2024       1886           9</span></span>
+<span><span class="co">#&gt; 14     2025       1858           9</span></span>
+<span><span class="co">#&gt; 15     2026       1859           9</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/north-country-chart-1.png" alt="North Country"><div class="figcaption">North Country</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#north-country-lost-26-of-its-students">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_14-southern-nhs-boston-corridor-also-losing-students">14. Southern NH’s Boston corridor also losing students<a class="anchor" aria-label="anchor" href="#id_14-southern-nhs-boston-corridor-also-losing-students"></a>
+</h3>
+<p>Even districts near the Massachusetts border — traditionally NH’s growth engine — are declining. Salem, Windham, Londonderry, and Hudson together lost 3,432 students.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">south_nh</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Salem"</span>, <span class="st">"Windham"</span>, <span class="st">"Londonderry"</span>, <span class="st">"Derry"</span>, <span class="st">"Hudson"</span>,</span>
+<span>              <span class="st">"Pelham"</span>, <span class="st">"Hampstead"</span>, <span class="st">"Atkinson"</span>, <span class="st">"Plaistow"</span>, <span class="st">"Sandown"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">snh_trend</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">district_name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">south_nh</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>n_students <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">snh_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">snh_trend</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">end_year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2012</span>, <span class="fl">2020</span>, <span class="fl">2026</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 3 × 2</span></span>
+<span><span class="co">#&gt;   end_year n_students</span></span>
+<span><span class="co">#&gt;      &lt;int&gt;      &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1     2012      18887</span></span>
+<span><span class="co">#&gt; 2     2020      16638</span></span>
+<span><span class="co">#&gt; 3     2026      15455</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/southern-nh-chart-1.png" alt="Regional comparison"><div class="figcaption">Regional comparison</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#southern-nhs-boston-corridor-also-losing-students">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_15-the-grade-pyramid-where-nhs-students-are">15. The grade pyramid: where NH’s students are<a class="anchor" aria-label="anchor" href="#id_15-the-grade-pyramid-where-nhs-students-are"></a>
+</h3>
+<p>The 2025-26 grade distribution shows that upper grades have more students than lower grades — confirming the downward demographic trend. Grade 9 has the most students (13,156), while Grade 1 has the fewest K-12 (11,169).</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">grade_dist</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_campus</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>,</span>
+<span>         <span class="va">end_year</span> <span class="op">==</span> <span class="fl">2026</span>,</span>
+<span>         <span class="op">!</span><span class="va">grade_level</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TOTAL"</span>, <span class="st">"ELEM"</span>, <span class="st">"MIDDLE"</span>, <span class="st">"HIGH"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">grade_level</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>n_students <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">grade_level</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">grade_dist</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">grade_dist</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; # A tibble: 15 × 2</span></span>
+<span><span class="co">#&gt;    grade_level n_students</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;            &lt;int&gt;</span></span>
+<span><span class="co">#&gt;  1 01               11169</span></span>
+<span><span class="co">#&gt;  2 02               11331</span></span>
+<span><span class="co">#&gt;  3 03               11677</span></span>
+<span><span class="co">#&gt;  4 04               12160</span></span>
+<span><span class="co">#&gt;  5 05               11983</span></span>
+<span><span class="co">#&gt;  6 06               12095</span></span>
+<span><span class="co">#&gt;  7 07               12311</span></span>
+<span><span class="co">#&gt;  8 08               12256</span></span>
+<span><span class="co">#&gt;  9 09               13156</span></span>
+<span><span class="co">#&gt; 10 10               12213</span></span>
+<span><span class="co">#&gt; 11 11               12339</span></span>
+<span><span class="co">#&gt; 12 12               12388</span></span>
+<span><span class="co">#&gt; 13 K                10727</span></span>
+<span><span class="co">#&gt; 14 PG                  73</span></span>
+<span><span class="co">#&gt; 15 PK                4395</span></span></code></pre>
+<div class="float">
+<img src="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks_files/figure-html/grade-pyramid-chart-1.png" alt="Grade pyramid"><div class="figcaption">Grade pyramid</div>
+</div>
+<p><a href="https://almartin82.github.io/nhschooldata/articles/enrollment_hooks.html#the-grade-pyramid-where-nhs-students-are">(source)</a></p>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

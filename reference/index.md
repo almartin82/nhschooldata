@@ -38,7 +38,15 @@ Functions for importing manually downloaded data
 - [`import_local_enrollment()`](https://almartin82.github.io/nhschooldata/reference/import_local_enrollment.md)
   : Import local enrollment file
 
+## Data
+
+Bundled datasets
+
+- [`nh_enrollment`](https://almartin82.github.io/nhschooldata/reference/nh_enrollment.md)
+  : New Hampshire School Enrollment Data
+
 ## Package
 
-- [`nhschooldata-package`](https://almartin82.github.io/nhschooldata/reference/nhschooldata-package.md)
+- [`nhschooldata`](https://almartin82.github.io/nhschooldata/reference/nhschooldata-package.md)
+  [`nhschooldata-package`](https://almartin82.github.io/nhschooldata/reference/nhschooldata-package.md)
   : nhschooldata: New Hampshire School Data
