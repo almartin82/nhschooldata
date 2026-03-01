@@ -3,13 +3,13 @@
 # ==============================================================================
 #
 # This file contains functions for loading bundled enrollment data.
-# The NH DOE iPlatform requires browser-based access, so bundled data
-# will be used when available.
+# The NH DOE iPlatform requires browser-based access (Akamai WAF blocks
+# headless HTTP). Real data was downloaded via headed Playwright and bundled
+# in inst/extdata/.
 #
-# STATUS: No bundled data is currently available. The synthetic data that
-# was previously shipped has been removed. Once real data from the NH DOE
-# is manually downloaded and committed to inst/extdata/, these functions
-# will provide it.
+# Bundled data covers 2012-2026 (15 years):
+#   nh_enrollment_districts.rds — ~200 districts/year, aggregated grades
+#   nh_enrollment_schools.rds — ~500 schools/year, individual grades PK-12
 #
 # ==============================================================================
 

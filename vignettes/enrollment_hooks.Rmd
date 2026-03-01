@@ -14,60 +14,652 @@ knitr::opts_chunk$set(
   fig.width = 8,
   fig.height = 5,
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  cache = TRUE
 )
 ```
-
-## Status: Under Construction
-
-The NH DOE iPlatform requires browser-based access, which prevents automated
-data downloads. This package's data pipeline is built but **no real enrollment
-data is currently bundled**. Once real data from the NH DOE is available, this
-vignette will be updated with data stories and visualizations.
-
-See the package README for manual data access instructions.
-
-## Package API
 
 ```{r load-packages}
 library(nhschooldata)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
 ```
 
-The main functions are ready to use once data is available:
-
-```{r api-demo, eval=FALSE}
-# Check available years
-get_available_years()
-
-# Fetch enrollment for a single year
-enr <- fetch_enr(2024)
-
-# Fetch multiple years
-enr_multi <- fetch_enr_multi(2020:2024)
-
-# Import manually downloaded file from NH DOE iPlatform
-df <- import_local_enrollment("~/Downloads/enrollment.xlsx", 2024, "district")
+```{r fetch-data}
+enr <- fetch_enr_multi(2012:2026, use_cache = TRUE)
 ```
 
-## Manual Data Access
+## State enrollment trend
 
-Download data directly from the NH DOE:
+New Hampshire's public school enrollment has declined steadily over the past
+14 years. The state lost over 30,000 students — a 16% drop — even as charter
+schools expanded and PreK programs grew.
 
-- **District enrollment**: <https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=9>
-- **School enrollment**: <https://my.doe.nh.gov/iPlatform/Report/DataReportsSubCategory?reportSubCategoryId=10>
+### 1. NH lost 30,000 students since 2012
 
-Then import using `import_local_enrollment()`:
+State enrollment fell from 190,805 to 160,322 — a 16% decline driven by
+demographic contraction in one of America's oldest-population states.
 
-```{r import-demo, eval=FALSE}
-df <- import_local_enrollment(
-  "~/Downloads/district-fall-enrollment.xlsx",
-  end_year = 2024,
-  level = "district"
+```{r state-trend}
+state_trend <- enr |>
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") |>
+  select(end_year, n_students) |>
+  arrange(end_year)
+
+stopifnot(nrow(state_trend) > 0)
+
+state_trend |>
+  mutate(
+    change = n_students - lag(n_students),
+    cumulative_change = n_students - first(n_students)
+  )
+```
+
+```{r state-trend-chart}
+ggplot(state_trend, aes(x = end_year, y = n_students)) +
+  geom_line(linewidth = 1.2, color = "#1f77b4") +
+  geom_point(size = 2, color = "#1f77b4") +
+  scale_y_continuous(labels = scales::comma, limits = c(150000, 200000)) +
+  scale_x_continuous(breaks = seq(2012, 2026, 2)) +
+  labs(
+    title = "New Hampshire Public School Enrollment, 2012-2026",
+    subtitle = "Total enrollment declined 16% (-30,483 students)",
+    x = "School Year (ending)",
+    y = "Total Students",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+### 2. COVID erased 8,259 students in a single year
+
+The 2020-21 school year saw a 4.7% enrollment drop — by far the largest
+single-year decline in the dataset. NH has not recovered.
+
+```{r covid-impact}
+covid <- enr |>
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL",
+         end_year %in% 2019:2022) |>
+  select(end_year, n_students) |>
+  arrange(end_year) |>
+  mutate(
+    yoy_change = n_students - lag(n_students),
+    yoy_pct = round((n_students / lag(n_students) - 1) * 100, 1)
+  )
+
+stopifnot(nrow(covid) == 4)
+covid
+```
+
+```{r covid-chart}
+yoy <- enr |>
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") |>
+  select(end_year, n_students) |>
+  arrange(end_year) |>
+  mutate(yoy_change = n_students - lag(n_students)) |>
+  filter(!is.na(yoy_change))
+
+ggplot(yoy, aes(x = end_year, y = yoy_change, fill = yoy_change < 0)) +
+  geom_col() +
+  scale_fill_manual(values = c("TRUE" = "#d62728", "FALSE" = "#2ca02c"), guide = "none") +
+  scale_x_continuous(breaks = seq(2013, 2026, 1)) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Year-over-Year Change in NH Enrollment",
+    subtitle = "COVID-19 caused an unprecedented 8,259-student drop in 2021",
+    x = "School Year (ending)",
+    y = "Change from Previous Year",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### 3. Charter schools grew from 0.6% to 3.9% of enrollment
+
+While total enrollment shrank, charter schools quintupled their share — from
+9 charters with 1,090 students in 2012 to 35 charters with 6,242 in 2026.
+
+```{r charter-growth}
+charter_names <- enr |>
+  filter(is_district, end_year == 2026) |>
+  filter(grepl("Charter|Chartered", district_name, ignore.case = TRUE)) |>
+  distinct(district_name) |>
+  pull()
+
+charter_trend <- enr |>
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         district_name %in% charter_names) |>
+  group_by(end_year) |>
+  summarize(
+    n_charter = sum(n_students, na.rm = TRUE),
+    n_charters = n(),
+    .groups = "drop"
+  )
+
+state_total <- enr |>
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") |>
+  select(end_year, state_total = n_students)
+
+charter_pct <- charter_trend |>
+  left_join(state_total, by = "end_year") |>
+  mutate(pct = round(n_charter / state_total * 100, 1))
+
+stopifnot(nrow(charter_pct) > 0)
+charter_pct
+```
+
+```{r charter-chart}
+ggplot(charter_pct, aes(x = end_year)) +
+  geom_col(aes(y = n_charter), fill = "#ff7f0e", alpha = 0.8) +
+  geom_text(aes(y = n_charter, label = paste0(pct, "%")),
+            vjust = -0.5, size = 3.5) +
+  scale_x_continuous(breaks = seq(2012, 2026, 2)) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "NH Charter School Enrollment, 2012-2026",
+    subtitle = "From 9 charters (0.6%) to 35 charters (3.9%) of total enrollment",
+    x = "School Year (ending)",
+    y = "Charter School Students",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+## District deep dives
+
+### 4. Manchester lost nearly a quarter of its students
+
+New Hampshire's largest city saw enrollment drop from 15,536 to 11,712 — a
+loss of 3,824 students (24.6%) while maintaining 20 schools.
+
+```{r manchester-nashua}
+big2 <- enr |>
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         district_name %in% c("Manchester", "Nashua")) |>
+  select(end_year, district_name, n_students) |>
+  arrange(end_year, district_name)
+
+stopifnot(nrow(big2) > 0)
+big2 |>
+  filter(end_year %in% c(2012, 2018, 2026)) |>
+  pivot_wider(names_from = district_name, values_from = n_students)
+```
+
+```{r manchester-nashua-chart}
+ggplot(big2, aes(x = end_year, y = n_students, color = district_name)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_continuous(breaks = seq(2012, 2026, 2)) +
+  scale_color_manual(values = c("Manchester" = "#1f77b4", "Nashua" = "#d62728")) +
+  labs(
+    title = "Manchester vs Nashua: NH's Two Largest Districts",
+    subtitle = "Both declining, but Manchester lost 3,824 students (-24.6%)",
+    x = "School Year (ending)",
+    y = "Total Students",
+    color = "District",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+### 5. Errol has 12 students — the state's tiniest district
+
+New Hampshire has dozens of districts with fewer than 100 students. The
+smallest, Errol, has just 12 — smaller than most college seminar classes.
+
+```{r smallest-districts}
+smallest <- enr |>
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         end_year == 2026) |>
+  select(district_name, sau, sau_name, n_students) |>
+  arrange(n_students) |>
+  head(10)
+
+stopifnot(nrow(smallest) > 0)
+smallest
+```
+
+```{r smallest-chart}
+smallest_plot <- smallest |>
+  mutate(district_name = forcats::fct_reorder(district_name, n_students))
+
+ggplot(smallest_plot, aes(x = district_name, y = n_students)) +
+  geom_col(fill = "#2ca02c") +
+  geom_text(aes(label = n_students), hjust = -0.3, size = 3.5) +
+  coord_flip() +
+  labs(
+    title = "NH's 10 Smallest School Districts (2025-26)",
+    subtitle = "Errol has just 12 students enrolled",
+    x = NULL,
+    y = "Total Students",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+### 6. Virtual Learning Academy grew 756% — the biggest gainer
+
+While most districts shrank, Virtual Learning Academy Charter School grew
+from 63 students in 2012 to 539 in 2026 — a 756% increase.
+
+```{r biggest-gainers}
+changes <- enr |>
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         end_year %in% c(2012, 2026)) |>
+  select(end_year, district_name, n_students) |>
+  pivot_wider(names_from = end_year, values_from = n_students,
+              names_prefix = "y") |>
+  filter(!is.na(y2012), !is.na(y2026)) |>
+  mutate(
+    change = y2026 - y2012,
+    pct_change = round((y2026 / y2012 - 1) * 100, 1)
+  )
+
+stopifnot(nrow(changes) > 0)
+cat("Top 5 gainers:\n")
+changes |> arrange(desc(pct_change)) |> head(5)
+```
+
+```{r gainers-chart}
+top_gainers <- changes |>
+  arrange(desc(change)) |>
+  head(8) |>
+  mutate(district_name = forcats::fct_reorder(district_name, change))
+
+ggplot(top_gainers, aes(x = district_name, y = change, fill = change > 0)) +
+  geom_col() +
+  geom_text(aes(label = paste0(ifelse(change > 0, "+", ""), change)),
+            hjust = -0.1, size = 3.5) +
+  coord_flip() +
+  scale_fill_manual(values = c("TRUE" = "#2ca02c"), guide = "none") +
+  labs(
+    title = "Districts That Grew Despite Statewide Decline",
+    subtitle = "2012 to 2026, absolute student change",
+    x = NULL,
+    y = "Change in Students",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+### 7. Top 5 losers account for 9,481 lost students
+
+The five largest districts — Manchester, Nashua, Hudson, Concord, and
+Londonderry — together lost 9,481 students, nearly a third of the statewide
+decline.
+
+```{r biggest-losers}
+top_losers <- changes |>
+  arrange(change) |>
+  head(5)
+
+stopifnot(nrow(top_losers) == 5)
+top_losers
+```
+
+```{r losers-chart}
+losers_trend <- enr |>
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         district_name %in% top_losers$district_name) |>
+  select(end_year, district_name, n_students)
+
+ggplot(losers_trend, aes(x = end_year, y = n_students, color = district_name)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.5) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_continuous(breaks = seq(2012, 2026, 2)) +
+  labs(
+    title = "NH's 5 Biggest Losers: Enrollment Since 2012",
+    subtitle = "Combined loss of 9,481 students (31% of statewide decline)",
+    x = "School Year (ending)",
+    y = "Total Students",
+    color = "District",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+## Grade-level patterns
+
+### 8. Grade 12 consistently outnumbers Grade 1
+
+Every year since 2012, more students graduate from 12th grade than enter 1st
+grade — a demographic signature of sustained population decline.
+
+```{r pipeline-ratio}
+pipeline <- enr |>
+  filter(is_campus, subgroup == "total_enrollment",
+         grade_level %in% c("01", "12")) |>
+  group_by(end_year, grade_level) |>
+  summarize(n = sum(n_students, na.rm = TRUE), .groups = "drop") |>
+  pivot_wider(names_from = grade_level, values_from = n) |>
+  rename(grade_01 = `01`, grade_12 = `12`) |>
+  mutate(ratio = round(grade_12 / grade_01, 2))
+
+stopifnot(nrow(pipeline) > 0)
+pipeline
+```
+
+```{r pipeline-chart}
+pipeline_long <- pipeline |>
+  pivot_longer(cols = c(grade_01, grade_12), names_to = "grade",
+               values_to = "students") |>
+  mutate(grade = ifelse(grade == "grade_01", "Grade 1", "Grade 12"))
+
+ggplot(pipeline_long, aes(x = end_year, y = students, color = grade)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_continuous(breaks = seq(2012, 2026, 2)) +
+  scale_color_manual(values = c("Grade 1" = "#2ca02c", "Grade 12" = "#9467bd")) +
+  labs(
+    title = "Grade 1 vs Grade 12 Enrollment",
+    subtitle = "More students exit than enter NH public schools each year",
+    x = "School Year (ending)",
+    y = "Students",
+    color = NULL,
+    caption = "Source: NH DOE iPlatform (school-level data)"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+### 9. PreK enrollment grew 39% while everything else shrank
+
+PreK enrollment rose from 3,165 to 4,395 — a 39% increase — even as overall
+enrollment fell 16%. The COVID crash in 2021 hit PreK hardest (37% drop) but
+it fully recovered by 2023.
+
+```{r prek-trend}
+prek <- enr |>
+  filter(is_state, subgroup == "total_enrollment", grade_level == "PK") |>
+  select(end_year, n_students) |>
+  arrange(end_year)
+
+stopifnot(nrow(prek) > 0)
+prek
+```
+
+```{r prek-chart}
+ggplot(prek, aes(x = end_year, y = n_students)) +
+  geom_line(linewidth = 1.2, color = "#ff7f0e") +
+  geom_point(size = 2, color = "#ff7f0e") +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_continuous(breaks = seq(2012, 2026, 2)) +
+  labs(
+    title = "PreK Enrollment Bucked the Statewide Decline",
+    subtitle = "Grew 39% (3,165 to 4,395) while total enrollment fell 16%",
+    x = "School Year (ending)",
+    y = "PreK Students",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+### 10. Kindergarten lost 1,177 students since 2012
+
+Kindergarten enrollment dropped from 11,904 to 10,727 — a 10% decline that
+signals continued enrollment losses ahead.
+
+```{r kindergarten}
+k_trend <- enr |>
+  filter(is_campus, subgroup == "total_enrollment", grade_level == "K") |>
+  group_by(end_year) |>
+  summarize(n_students = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+stopifnot(nrow(k_trend) > 0)
+k_trend
+```
+
+```{r kindergarten-chart}
+ggplot(k_trend, aes(x = end_year, y = n_students)) +
+  geom_line(linewidth = 1.2, color = "#17becf") +
+  geom_point(size = 2, color = "#17becf") +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_continuous(breaks = seq(2012, 2026, 2)) +
+  labs(
+    title = "Kindergarten Enrollment, 2012-2026",
+    subtitle = "Down 10% — each incoming class is smaller than the last",
+    x = "School Year (ending)",
+    y = "Kindergarten Students",
+    caption = "Source: NH DOE iPlatform (school-level data)"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+## Structural patterns
+
+### 11. 111 one-school districts vs Manchester's 20
+
+Over half of NH's districts have just one school. Meanwhile Manchester
+operates 20 — nearly as many as the bottom 40 districts combined.
+
+```{r school-counts}
+schools_per <- enr |>
+  filter(is_campus, subgroup == "total_enrollment", grade_level == "TOTAL",
+         end_year == 2026) |>
+  group_by(district_name) |>
+  summarize(n_schools = n(), .groups = "drop") |>
+  arrange(desc(n_schools))
+
+stopifnot(nrow(schools_per) > 0)
+cat("Districts by school count:\n")
+schools_per |>
+  mutate(category = case_when(
+    n_schools == 1 ~ "1 school",
+    n_schools <= 3 ~ "2-3 schools",
+    n_schools <= 10 ~ "4-10 schools",
+    TRUE ~ "11+ schools"
+  )) |>
+  count(category)
+```
+
+```{r school-counts-chart}
+schools_hist <- schools_per |>
+  mutate(bucket = cut(n_schools, breaks = c(0, 1, 3, 5, 10, 20),
+                      labels = c("1", "2-3", "4-5", "6-10", "11-20")))
+
+ggplot(schools_hist, aes(x = bucket)) +
+  geom_bar(fill = "#1f77b4") +
+  geom_text(stat = "count", aes(label = after_stat(count)), vjust = -0.5) +
+  labs(
+    title = "How Many Schools Do NH Districts Operate? (2025-26)",
+    subtitle = "111 districts have just one school; Manchester has 20",
+    x = "Number of Schools",
+    y = "Number of Districts",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+### 12. The SAU system: one administrator, multiple districts
+
+New Hampshire's School Administrative Units (SAUs) are a unique feature.
+Plymouth SAU #48 covers 8 districts, allowing tiny towns to share
+administrative costs.
+
+```{r sau-system}
+sau_multi <- enr |>
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         end_year == 2026) |>
+  group_by(sau, sau_name) |>
+  summarize(
+    n_districts = n(),
+    total_students = sum(n_students, na.rm = TRUE),
+    districts = paste(district_name, collapse = ", "),
+    .groups = "drop"
+  ) |>
+  arrange(desc(n_districts))
+
+stopifnot(nrow(sau_multi) > 0)
+sau_multi |> head(8)
+```
+
+```{r sau-chart}
+sau_top <- sau_multi |>
+  head(10) |>
+  mutate(sau_label = paste0("SAU ", sau, " (", sau_name, ")")) |>
+  mutate(sau_label = forcats::fct_reorder(sau_label, n_districts))
+
+ggplot(sau_top, aes(x = sau_label, y = n_districts)) +
+  geom_col(fill = "#9467bd") +
+  geom_text(aes(label = paste0(n_districts, " districts\n(",
+                                scales::comma(total_students), " students)")),
+            hjust = -0.05, size = 3) +
+  coord_flip() +
+  labs(
+    title = "SAUs with the Most Districts (2025-26)",
+    subtitle = "Plymouth SAU #48 covers 8 independent districts",
+    x = NULL,
+    y = "Number of Districts",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(plot.margin = margin(5.5, 40, 5.5, 5.5))
+```
+
+### 13. North Country lost 26% of its students
+
+The remote northern districts (Coos County area) saw enrollment drop from
+2,526 to 1,859 — a 26% decline, steeper than the statewide average.
+
+```{r north-country}
+north_country <- c("Berlin", "Gorham", "Milan", "Errol", "Pittsburg",
+                    "Colebrook", "Stark", "Stratford", "Stewartstown",
+                    "Northumberland", "Lancaster", "Whitefield", "Dalton")
+
+nc_trend <- enr |>
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         district_name %in% north_country) |>
+  group_by(end_year) |>
+  summarize(
+    n_students = sum(n_students, na.rm = TRUE),
+    n_districts = n(),
+    .groups = "drop"
+  )
+
+stopifnot(nrow(nc_trend) > 0)
+nc_trend
+```
+
+```{r north-country-chart}
+ggplot(nc_trend, aes(x = end_year, y = n_students)) +
+  geom_line(linewidth = 1.2, color = "#d62728") +
+  geom_point(size = 2, color = "#d62728") +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_continuous(breaks = seq(2012, 2026, 2)) +
+  labs(
+    title = "North Country Enrollment: Faster Decline Than the State",
+    subtitle = "Coos County area districts lost 26% of students (2,526 to 1,859)",
+    x = "School Year (ending)",
+    y = "Total Students",
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+### 14. Southern NH's Boston corridor also losing students
+
+Even districts near the Massachusetts border — traditionally NH's growth
+engine — are declining. Salem, Windham, Londonderry, and Hudson together lost
+3,432 students.
+
+```{r southern-nh}
+south_nh <- c("Salem", "Windham", "Londonderry", "Derry", "Hudson",
+              "Pelham", "Hampstead", "Atkinson", "Plaistow", "Sandown")
+
+snh_trend <- enr |>
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         district_name %in% south_nh) |>
+  group_by(end_year) |>
+  summarize(n_students = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+stopifnot(nrow(snh_trend) > 0)
+snh_trend |> filter(end_year %in% c(2012, 2020, 2026))
+```
+
+```{r southern-nh-chart}
+# Compare Southern NH vs State (indexed to 2012 = 100)
+state_idx <- state_trend |>
+  mutate(index = round(n_students / first(n_students) * 100, 1),
+         region = "Statewide")
+
+snh_idx <- snh_trend |>
+  mutate(index = round(n_students / first(n_students) * 100, 1),
+         region = "Southern NH (Boston corridor)")
+
+nc_idx <- nc_trend |>
+  mutate(index = round(n_students / first(n_students) * 100, 1),
+         region = "North Country")
+
+combined <- bind_rows(
+  state_idx |> select(end_year, index, region),
+  snh_idx |> select(end_year, index, region),
+  nc_idx |> select(end_year, index, region)
 )
 
-# Process and tidy the imported data
-processed <- process_enr(list(district = df, school = NULL), 2024)
-tidy <- tidy_enr(processed)
+ggplot(combined, aes(x = end_year, y = index, color = region)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  geom_hline(yintercept = 100, linetype = "dashed", alpha = 0.5) +
+  scale_x_continuous(breaks = seq(2012, 2026, 2)) +
+  labs(
+    title = "Regional Enrollment Decline (Indexed to 2012 = 100)",
+    subtitle = "North Country declining fastest, but even Southern NH is down",
+    x = "School Year (ending)",
+    y = "Index (2012 = 100)",
+    color = NULL,
+    caption = "Source: NH DOE iPlatform"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "bottom")
+```
+
+### 15. The grade pyramid: where NH's students are
+
+The 2025-26 grade distribution shows that upper grades have more students
+than lower grades — confirming the downward demographic trend. Grade 9 has
+the most students (13,156), while Grade 1 has the fewest K-12 (11,169).
+
+```{r grade-pyramid}
+grade_dist <- enr |>
+  filter(is_campus, subgroup == "total_enrollment",
+         end_year == 2026,
+         !grade_level %in% c("TOTAL", "ELEM", "MIDDLE", "HIGH")) |>
+  group_by(grade_level) |>
+  summarize(n_students = sum(n_students, na.rm = TRUE), .groups = "drop") |>
+  arrange(grade_level)
+
+stopifnot(nrow(grade_dist) > 0)
+grade_dist
+```
+
+```{r grade-pyramid-chart}
+grade_order <- c("PK", "K", "01", "02", "03", "04", "05", "06",
+                 "07", "08", "09", "10", "11", "12", "PG")
+grade_labels <- c("PreK", "K", "1", "2", "3", "4", "5", "6",
+                  "7", "8", "9", "10", "11", "12", "PG")
+
+grade_plot <- grade_dist |>
+  mutate(
+    grade_level = factor(grade_level, levels = grade_order, labels = grade_labels)
+  ) |>
+  filter(!is.na(grade_level))
+
+ggplot(grade_plot, aes(x = grade_level, y = n_students)) +
+  geom_col(fill = "#1f77b4") +
+  geom_text(aes(label = scales::comma(n_students)), vjust = -0.3, size = 3) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "NH Enrollment by Grade Level (2025-26)",
+    subtitle = "Upper grades larger than lower — demographic contraction in real time",
+    x = "Grade",
+    y = "Students",
+    caption = "Source: NH DOE iPlatform (school-level data)"
+  ) +
+  theme_minimal(base_size = 13)
 ```
 
 ## Session Info

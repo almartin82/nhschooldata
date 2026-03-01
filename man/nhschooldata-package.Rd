@@ -2,6 +2,7 @@
 % Please edit documentation in R/nhschooldata-package.R
 \docType{package}
 \name{nhschooldata-package}
+\alias{nhschooldata}
 \alias{nhschooldata-package}
 \title{nhschooldata: New Hampshire School Data}
 \description{
@@ -69,14 +70,6 @@ NH DOE iPlatform and import it using \code{\link{import_local_enrollment}}.
 }
 
 \seealso{
-Useful links:
-\itemize{
-  \item \url{https://almartin82.github.io/nhschooldata/}
-  \item \url{https://github.com/almartin82/nhschooldata}
-  \item Report bugs at \url{https://github.com/almartin82/nhschooldata/issues}
-}
-
-
 Useful links:
 \itemize{
   \item \url{https://almartin82.github.io/nhschooldata/}

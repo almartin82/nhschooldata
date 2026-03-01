@@ -14,12 +14,8 @@ Returns the range of years for which enrollment data is available
 from the New Hampshire Department of Education.
 }
 \details{
-NH DOE iPlatform provides enrollment data for approximately the
-current year plus 10 prior years. Data availability may vary.
-
-Note: No bundled data is currently available. The iPlatform requires
-browser-based access. Use \code{\link{import_local_enrollment}} to
-load manually downloaded files.
+Bundled data covers 2012-2026 (15 school years). Data was downloaded
+from the NH DOE iPlatform reporting system.
 }
 \examples{
 get_available_years()

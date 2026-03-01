@@ -7,6 +7,7 @@ Description: A simple, consistent interface for accessing New Hampshire
     school data in Python and R.
 License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Depends:
@@ -16,20 +17,17 @@ Imports:
     readxl,
     readr,
     purrr,
-    stringr,
-    tidyr,
     rlang,
     httr,
-    rappdirs,
-    xml2,
-    rvest,
-    jsonlite
+    rappdirs
 Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
     ggplot2,
-    scales
+    scales,
+    forcats,
+    tidyr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://almartin82.github.io/nhschooldata/, https://github.com/almartin82/nhschooldata

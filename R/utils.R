@@ -32,12 +32,8 @@ safe_numeric <- function(x) {
 #' Returns the range of years for which enrollment data is available
 #' from the New Hampshire Department of Education.
 #'
-#' NH DOE iPlatform provides enrollment data for approximately the
-#' current year plus 10 prior years. Data availability may vary.
-#'
-#' Note: No bundled data is currently available. The iPlatform requires
-#' browser-based access. Use \code{\link{import_local_enrollment}} to
-#' load manually downloaded files.
+#' Bundled data covers 2012-2026 (15 school years). Data was downloaded
+#' from the NH DOE iPlatform reporting system.
 #'
 #' @return Named list with min_year, max_year, source, and note
 #' @export
@@ -52,19 +48,10 @@ get_available_years <- function() {
     max_year <- max(bundled_years)
     data_status <- "bundled data available"
   } else {
-    # Estimated range based on NH DOE iPlatform typical availability
-    current_year <- as.integer(format(Sys.Date(), "%Y"))
-    current_month <- as.integer(format(Sys.Date(), "%m"))
-
-    if (current_month >= 11) {
-      max_year <- min(current_year + 1, 2026L)
-    } else if (current_month >= 9) {
-      max_year <- min(current_year, 2026L)
-    } else {
-      max_year <- min(current_year, 2026L)
-    }
-    min_year <- max_year - 10
-    data_status <- "no bundled data; live download or manual import required"
+    # Fallback: estimate from iPlatform availability
+    min_year <- 2012L
+    max_year <- 2026L
+    data_status <- "bundled data not found; install package to access"
   }
 
   list(
