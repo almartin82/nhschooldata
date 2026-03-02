@@ -15,10 +15,11 @@ navbar:
 
 reference:
   - title: "Fetching Data"
-    desc: "Functions for downloading enrollment data"
+    desc: "Functions for downloading enrollment and directory data"
     contents:
       - fetch_enr
       - fetch_enr_multi
+      - fetch_directory
       - get_available_years
 
   - title: "Data Transformation"
@@ -33,11 +34,13 @@ reference:
     contents:
       - cache_status
       - clear_cache
+      - clear_directory_cache
 
   - title: "Manual Import"
     desc: "Functions for importing manually downloaded data"
     contents:
       - import_local_enrollment
+      - import_local_directory
 
   - title: "Data"
     desc: "Bundled datasets"
