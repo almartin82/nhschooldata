@@ -163,7 +163,7 @@ covid
 | **Enrollment** | 2012-2026 | `fetch_enr()` / `fetch_enr_multi()` | State, district, school. Grade-level totals |
 | Assessments | — | — | Not yet available |
 | Graduation | — | — | Not yet available |
-| Directory | — | — | Not yet available |
+| **Directory** | Current | `fetch_directory()` | Schools, SAUs. Address, phone, principal, superintendent |
 | Per-Pupil Spending | — | — | Not yet available |
 | Accountability | — | — | Not yet available |
 | Chronic Absence | — | — | Not yet available |
