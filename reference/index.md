@@ -2,12 +2,14 @@
 
 ## Fetching Data
 
-Functions for downloading enrollment data
+Functions for downloading enrollment and directory data
 
 - [`fetch_enr()`](https://almartin82.github.io/nhschooldata/reference/fetch_enr.md)
   : Fetch New Hampshire enrollment data
 - [`fetch_enr_multi()`](https://almartin82.github.io/nhschooldata/reference/fetch_enr_multi.md)
   : Fetch enrollment data for multiple years
+- [`fetch_directory()`](https://almartin82.github.io/nhschooldata/reference/fetch_directory.md)
+  : Fetch New Hampshire school directory data
 - [`get_available_years()`](https://almartin82.github.io/nhschooldata/reference/get_available_years.md)
   : Get available years for enrollment data
 
@@ -30,6 +32,8 @@ Functions for managing cached data
   : Show cache status
 - [`clear_cache()`](https://almartin82.github.io/nhschooldata/reference/clear_cache.md)
   : Clear the nhschooldata cache
+- [`clear_directory_cache()`](https://almartin82.github.io/nhschooldata/reference/clear_directory_cache.md)
+  : Clear school directory cache
 
 ## Manual Import
 
@@ -37,6 +41,8 @@ Functions for importing manually downloaded data
 
 - [`import_local_enrollment()`](https://almartin82.github.io/nhschooldata/reference/import_local_enrollment.md)
   : Import local enrollment file
+- [`import_local_directory()`](https://almartin82.github.io/nhschooldata/reference/import_local_directory.md)
+  : Import local directory file
 
 ## Data
 
